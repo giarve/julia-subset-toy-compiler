@@ -57,4 +57,4 @@ Parser.c
 Parser.h
 Lexer.c
 Lexer.h
-test
+compiler

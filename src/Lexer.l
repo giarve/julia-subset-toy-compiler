@@ -6,8 +6,8 @@
 %option outfile="Lexer.c" header-file="Lexer.h"
 %option warn nodefault
 %option reentrant noyywrap never-interactive nounistd yylineno
-%option bison-bridge
-%option nounput noinput
+%option bison-bridge bison-locations
+%option nounput noinput 
 
 DIGIT [0-9]
 IDENTIFIER [a-zA-Z][a-zA-Z0-9]* 
@@ -22,6 +22,7 @@ FLOAT {INTEGER}\.{INTEGER}
 {FLOAT}       { return TOKEN_FLOAT; }
 {IDENTIFIER}  { return TOKEN_IDENTIFIER; /* Fix this, shouldn't allow __ in the middle and _ at the end  */ }
 
+"="           { return TOKEN_EQUALS_SIGN; }
 "*"           { return TOKEN_STAR; }
 "+"           { return TOKEN_PLUS; }
 "^"           { return TOKEN_CARET; }
@@ -29,8 +30,8 @@ FLOAT {INTEGER}\.{INTEGER}
 "("           { return TOKEN_LPAREN; }
 ")"           { return TOKEN_RPAREN; }
 
-"=="          { return TOKEN_EQUALS; }
-"!="          { return TOKEN_NOT_EQUALS; }
+"=="          { return TOKEN_DOUBLE_EQUAL; }
+"!="          { return TOKEN_EXCLAMATION_EQUAL; }
 ">"           { return TOKEN_GREATER; }
 "<"           { return TOKEN_LOWER; }
 ">="          { return TOKEN_GREATER_EQUAL; }
@@ -40,11 +41,6 @@ FLOAT {INTEGER}\.{INTEGER}
 "||"          { return TOKEN_OR; }
 "!"           { return TOKEN_NOT; }
 
-.             { continue; /* Ignore unexpected characters. */}
+.             { printf("Unexpected: %s\n",yytext); continue; /* Ignore unexpected characters. */}
 
 %%
-
-int yyerror(const char *msg) {
-    fprintf(stderr, "Error: %s\n", msg);
-    return 0;
-}

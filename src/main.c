@@ -3,33 +3,40 @@
 
 #include <stdio.h>
 
-int main(void)
+int main(int argc, char *argv[])
 {
-    char expr[] = "41212"; // TODO: read input from file * .jl
+    if (argc < 1)
+    {
+        fprintf(stderr, "Invalid params\n");
+        return -4;
+    }
+
+    FILE *fp = fopen(argv[1], "r");
+    if (fp == NULL)
+    {
+        fprintf(stderr, "Cannot open file %s\n", argv[1]);
+        return -3;
+    }
 
     yyscan_t scanner;
-    YY_BUFFER_STATE state;
-
     if (yylex_init(&scanner))
     {
-        /* could not initialize */
         printf("Error initializing");
         return -2;
     }
-
-    state = yy_scan_string(expr, scanner);
+    
+    yyset_in(fp, scanner);
 
     if (yyparse(scanner))
     {
-        /* error parsing */
-        printf("Error parsing %s \n", expr);
+        printf("Error parsing\n");
         return -1;
     }
 
-    yy_delete_buffer(state, scanner);
-
     yylex_destroy(scanner);
+    
+    fclose(fp);
 
-    printf("=== Scanned %s === \n", expr);
+    printf("=== Scanned === \n");
     return 0;
 }

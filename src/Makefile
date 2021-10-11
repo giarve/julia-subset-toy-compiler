@@ -9,10 +9,10 @@ LIB = -lfl
 LFLAGS = 
 YFLAGS = -d
 
-OUTPUT_BINARY_NAME = test
+COMPILER_NAME = compiler
 
-$(OUTPUT_BINARY_NAME): $(FILES)
-	$(CC) $(CFLAGS) $(LIB) $(FILES) -o $(OUTPUT_BINARY_NAME) 
+$(COMPILER_NAME): $(FILES)
+	$(CC) $(CFLAGS) $(LIB) $(FILES) -o $(COMPILER_NAME) 
 
 Lexer.c: Lexer.l
 	flex Lexer.l $(LFLAGS)
@@ -20,5 +20,8 @@ Lexer.c: Lexer.l
 Parser.c: Parser.y Lexer.c
 	bison Parser.y $(YFLAGS)
 
+examples: $(COMPILER_NAME)
+	./$(COMPILER_NAME) example.jl
+
 clean:
-	rm -f *.o *~ {Lexer,Parser}.{c,h} $(OUTPUT_BINARY_NAME)
+	rm -f *.o *~ {Lexer,Parser}.{c,h} $(COMPILER_NAME)
