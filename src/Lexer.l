@@ -9,23 +9,42 @@
 %option bison-bridge bison-locations
 %option nounput noinput 
 
+
+%x COMMENT_MULTILINE
+%x COMMENT_SINGLELINE
+
 DIGIT [0-9]
 IDENTIFIER [a-zA-Z][a-zA-Z0-9]* 
 INTEGER {DIGIT}+
 FLOAT {INTEGER}\.{INTEGER}
+NEWLINE \n|\r\n
 
 %%
 
-[ \t\r\n]+    { continue; /* ignore whitespaces, tabs and newlines */ }
+[ \t\r]+    { /* ignore whitespaces and tabs */ }
 
+"#"                           { BEGIN(COMMENT_SINGLELINE); }
+<COMMENT_SINGLELINE>{NEWLINE} { BEGIN(INITIAL); }
+<COMMENT_SINGLELINE>.         { }
+
+"#="                          { BEGIN(COMMENT_MULTILINE); }
+<COMMENT_MULTILINE>"=#"       { BEGIN(INITIAL); }
+<COMMENT_MULTILINE>{NEWLINE}  { }
+<COMMENT_MULTILINE>.          { }
+
+{NEWLINE}     { return TOKEN_NEWLINE; }
 {INTEGER}     { return TOKEN_INTEGER; }
 {FLOAT}       { return TOKEN_FLOAT; }
 {IDENTIFIER}  { return TOKEN_IDENTIFIER; /* Fix this, shouldn't allow __ in the middle and _ at the end  */ }
+
+
+";"           { return TOKEN_SEMICOLON; }
 
 "="           { return TOKEN_EQUALS_SIGN; }
 "*"           { return TOKEN_STAR; }
 "+"           { return TOKEN_PLUS; }
 "^"           { return TOKEN_CARET; }
+"/"           { return TOKEN_SLASH; }
 "%"           { return TOKEN_PERCENT; }
 "("           { return TOKEN_LPAREN; }
 ")"           { return TOKEN_RPAREN; }
@@ -39,8 +58,8 @@ FLOAT {INTEGER}\.{INTEGER}
 
 "&&"          { return TOKEN_AND; }
 "||"          { return TOKEN_OR; }
-"!"           { return TOKEN_NOT; }
+"!"           { return TOKEN_BANG; }
 
-.             { printf("Unexpected: %s\n",yytext); continue; /* Ignore unexpected characters. */}
+.             { fprintf(stderr, "Lexer - Unexpected: %s\n", yytext); }
 
 %%
