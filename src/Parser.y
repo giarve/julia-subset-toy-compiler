@@ -22,23 +22,45 @@
   void yyerror(YYLTYPE* yyllocp, yyscan_t unused, const char* msg);
 }
 
-%token TOKEN_INTEGER TOKEN_FLOAT
-%token TOKEN_IDENTIFIER
-%token TOKEN_EQUALS_SIGN TOKEN_STAR TOKEN_PLUS TOKEN_LPAREN TOKEN_RPAREN TOKEN_PERCENT TOKEN_CARET
-%token TOKEN_AND TOKEN_OR TOKEN_NOT
+%token TOKEN_INTEGER TOKEN_FLOAT TOKEN_STRING 
+%token TOKEN_IDENTIFIER TOKEN_NEWLINE
+%token TOKEN_EQUALS_SIGN TOKEN_STAR TOKEN_PLUS TOKEN_LPAREN TOKEN_RPAREN TOKEN_PERCENT TOKEN_CARET TOKEN_SLASH TOKEN_SEMICOLON
+%token TOKEN_AND TOKEN_OR TOKEN_BANG
 %token TOKEN_DOUBLE_EQUAL TOKEN_EXCLAMATION_EQUAL TOKEN_GREATER TOKEN_LOWER TOKEN_GREATER_EQUAL TOKEN_LOWER_EQUAL
+
+%start program
 
 %%
 
-input
-    : arithmetic_expression { }
+program
+    : statement { printf("statement\n"); }
     ;
 
-arithmetic_expression
-    : TOKEN_IDENTIFIER  { }
-    | TOKEN_INTEGER      {}
-    ;
+statement
+	: expression_statement
+	;
 
+expression_statement
+	: TOKEN_NEWLINE
+	| expression TOKEN_NEWLINE
+	;
+
+expression
+	: assignment_expression
+	;
+
+assignment_expression
+	: TOKEN_IDENTIFIER assignment_operator constant
+	;
+
+assignment_operator
+	: TOKEN_EQUALS_SIGN
+	| TOKEN_STAR
+	;
+
+constant
+	: TOKEN_INTEGER
+	;
 
 %%
 
