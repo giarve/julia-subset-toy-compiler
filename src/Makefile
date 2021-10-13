@@ -6,22 +6,22 @@ CC = gcc
 CFLAGS = -std=c17 -Wall -g
 LIB = -lfl
 
-LFLAGS = 
-YFLAGS = -d
+LFLAGS = --debug
+YFLAGS = --debug
 
-COMPILER_NAME = compiler
+COMPILER_NAME = minijuliac
 
 $(COMPILER_NAME): $(FILES)
 	$(CC) $(CFLAGS) $(LIB) $(FILES) -o $(COMPILER_NAME) 
 
 Lexer.c: Lexer.l
-	flex Lexer.l $(LFLAGS)
+	flex $(LFLAGS) Lexer.l
 
 Parser.c: Parser.y Lexer.c
-	bison Parser.y $(YFLAGS)
+	bison $(YFLAGS) Parser.y
 
 examples: $(COMPILER_NAME)
-	./$(COMPILER_NAME) example.jl
+	./$(COMPILER_NAME) example.jl example.out.txt
 
 clean:
 	rm -f *.o *~ {Lexer,Parser}.{c,h} $(COMPILER_NAME)
