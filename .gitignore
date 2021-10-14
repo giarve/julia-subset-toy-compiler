@@ -55,6 +55,7 @@ dkms.conf
 
 Parser.c
 Parser.h
+Parser.output
 Lexer.c
 Lexer.h
 minijuliac

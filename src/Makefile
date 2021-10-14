@@ -7,7 +7,7 @@ CFLAGS = -std=c17 -Wall -g
 LIB = -lfl
 
 LFLAGS = --debug
-YFLAGS = --debug
+YFLAGS = --debug --report=all
 
 COMPILER_NAME = minijuliac
 

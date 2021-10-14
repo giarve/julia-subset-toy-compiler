@@ -1,6 +1,5 @@
 %{
   #include "./Parser.h"
-  #define RET_TEXT yylval.sval = malloc(strlen(yytext)); strncpy(yylval.sval, yytext, strlen(yytext));
 %}
 
 %option outfile="Lexer.c" header-file="Lexer.h"
@@ -14,7 +13,7 @@
 %x COMMENT_SINGLELINE
 
 DIGIT [0-9]
-IDENTIFIER [a-zA-Z][a-zA-Z0-9]* 
+IDENTIFIER [a-zA-Z](_{0,1}[a-zA-Z0-9])*
 INTEGER {DIGIT}+
 FLOAT {INTEGER}\.{INTEGER}
 NEWLINE \n|\r\n
@@ -35,7 +34,7 @@ NEWLINE \n|\r\n
 {NEWLINE}     { return TOKEN_NEWLINE; }
 {INTEGER}     { return TOKEN_INTEGER; }
 {FLOAT}       { return TOKEN_FLOAT; }
-{IDENTIFIER}  { return TOKEN_IDENTIFIER; /* Fix this, shouldn't allow __ in the middle and _ at the end  */ }
+{IDENTIFIER}  { return TOKEN_IDENTIFIER; }
 
 
 ";"           { return TOKEN_SEMICOLON; }

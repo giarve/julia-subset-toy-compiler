@@ -37,16 +37,12 @@ program
     ;
 
 statement
-	: expression_statement
-	;
-
-expression_statement
-	: TOKEN_NEWLINE
-	| expression TOKEN_NEWLINE
+	: expression
+	// branch/iteration statements in the future
 	;
 
 expression
-	: assignment_expression
+	: assignment_expression TOKEN_NEWLINE
 	;
 
 assignment_expression
