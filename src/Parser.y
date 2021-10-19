@@ -12,9 +12,10 @@
   #include <stdio.h>
   #include <stdlib.h>
   #include <string.h>
-  #include <stdbool.h>
 }
 %code requires {
+  #include <stdbool.h>
+
   typedef void* yyscan_t;
 }
 %code {
@@ -27,6 +28,7 @@
 	char *identifier;
 	int integer;
 	float floaT;
+	bool true_or_false;
 }
 
 %token <integer> TOKEN_INTEGER
@@ -38,7 +40,8 @@
 %token TOKEN_AND TOKEN_OR TOKEN_BANG
 %token TOKEN_DOUBLE_EQUAL TOKEN_BANG_EQUAL 
 %token TOKEN_GREATER TOKEN_LOWER TOKEN_GREATER_EQUAL TOKEN_LOWER_EQUAL
-%token TOKEN_TRUE TOKEN_FALSE
+%token <true_or_false> TOKEN_TRUE
+%token <true_or_false> TOKEN_FALSE
 %token TOKEN_RSQRBRKT TOKEN_LSQRBRKT
 %token TOKEN_FUNC_TRANSPOSE
 %token TOKEN_NEWLINE
@@ -67,12 +70,12 @@ primary_expression
 	: TOKEN_IDENTIFIER
 	| CONSTANT
 	| TOKEN_LPAREN arithmetic_boolean_expressions_sentence TOKEN_RPAREN
+	| TOKEN_LSQRBRKT composite_element_list_initialization TOKEN_RSQRBRKT // array/vector
 	;
 
 postfix_expression
 	: primary_expression
-	| postfix_expression TOKEN_LSQRBRKT arithmetic_boolean_expressions_sentence TOKEN_RSQRBRKT // index access, still missing multi dimensions
-	| TOKEN_LSQRBRKT composite_element_list_initialization TOKEN_RSQRBRKT // initialization TODO: Is this correct?
+	| postfix_expression TOKEN_LSQRBRKT arithmetic_boolean_expressions_sentence TOKEN_RSQRBRKT // index access
 	;
 
 unary_expression
