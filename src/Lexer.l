@@ -17,10 +17,11 @@ IDENTIFIER [a-zA-Z](_{0,1}[a-zA-Z0-9])*
 INTEGER {DIGIT}+
 FLOAT {INTEGER}\.{INTEGER}
 NEWLINE \n|\r\n
+STRING \".*\"
 
 %%
 
-[ \t\r]+    { /* ignore whitespaces and tabs */ }
+[ \t\n\r]+    { /* ignore whitespaces, newlines and tabs */ }
 
 "#"                           { BEGIN(COMMENT_SINGLELINE); }
 <COMMENT_SINGLELINE>{NEWLINE} { BEGIN(INITIAL); }
@@ -31,13 +32,9 @@ NEWLINE \n|\r\n
 <COMMENT_MULTILINE>{NEWLINE}  { }
 <COMMENT_MULTILINE>.          { }
 
-{NEWLINE}     { return TOKEN_NEWLINE; }
-{INTEGER}     { return TOKEN_INTEGER; }
-{FLOAT}       { return TOKEN_FLOAT; }
-{IDENTIFIER}  { return TOKEN_IDENTIFIER; }
-
-
 ";"           { return TOKEN_SEMICOLON; }
+"\["          { return TOKEN_LSQRBRKT; }
+"\]"          { return TOKEN_RSQRBRKT; }
 
 "="           { return TOKEN_EQUALS_SIGN; }
 "*"           { return TOKEN_STAR; }
@@ -55,10 +52,17 @@ NEWLINE \n|\r\n
 ">="          { return TOKEN_GREATER_EQUAL; }
 "<="          { return TOKEN_LOWER_EQUAL; }
 
+"true"        { return TOKEN_TRUE; }
+"false"       { return TOKEN_FALSE; }
 "&&"          { return TOKEN_AND; }
 "||"          { return TOKEN_OR; }
 "!"           { return TOKEN_BANG; }
 
-.             { fprintf(stderr, "Lexer - Unexpected: %s\n", yytext); }
+{FLOAT}       { return TOKEN_FLOAT; }
+{INTEGER}     { return TOKEN_INTEGER; }
+{STRING}      { return TOKEN_STRING; }
+{IDENTIFIER}  { return TOKEN_IDENTIFIER; }
+
+.             { fprintf(stderr, "!!!! Lexer - Unexpected: %s\n", yytext); }
 
 %%
