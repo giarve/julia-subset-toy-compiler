@@ -22,44 +22,30 @@
   void yyerror(YYLTYPE* yyllocp, yyscan_t unused, const char* msg);
 }
 
-%token TOKEN_INTEGER TOKEN_FLOAT TOKEN_STRING 
-%token TOKEN_IDENTIFIER
-%token TOKEN_EQUALS_SIGN TOKEN_STAR TOKEN_PLUS TOKEN_LPAREN TOKEN_RPAREN TOKEN_PERCENT TOKEN_CARET TOKEN_SLASH TOKEN_SEMICOLON
+%union {
+	char *string;
+	char *identifier;
+	int integer;
+	float floaT;
+}
+
+%token <integer> TOKEN_INTEGER
+%token <floaT> TOKEN_FLOAT
+%token <string> TOKEN_STRING 
+%token <identifier> TOKEN_IDENTIFIER
+%token TOKEN_EQUALS_SIGN TOKEN_STAR TOKEN_PLUS TOKEN_MINUS
+%token TOKEN_LPAREN TOKEN_RPAREN TOKEN_PERCENT TOKEN_CARET TOKEN_SLASH TOKEN_SEMICOLON TOKEN_COMMA
 %token TOKEN_AND TOKEN_OR TOKEN_BANG
-%token TOKEN_DOUBLE_EQUAL TOKEN_EXCLAMATION_EQUAL TOKEN_GREATER TOKEN_LOWER TOKEN_GREATER_EQUAL TOKEN_LOWER_EQUAL
+%token TOKEN_DOUBLE_EQUAL TOKEN_BANG_EQUAL 
+%token TOKEN_GREATER TOKEN_LOWER TOKEN_GREATER_EQUAL TOKEN_LOWER_EQUAL
 %token TOKEN_TRUE TOKEN_FALSE
 %token TOKEN_RSQRBRKT TOKEN_LSQRBRKT
+%token TOKEN_FUNC_TRANSPOSE
+%token TOKEN_NEWLINE
 
 %start program
 
 %%
-
-program
-    : statement_list
-    ;
-
-statement_list
-	: statement_list expression
-	| expression
-	;
-
-expression
-	: assignment_expression
-	;
-
-assignment_expression
-	: TOKEN_IDENTIFIER ASSIGNMENT_OPERATOR var_definition { printf("statement\n"); }
-	;
-
-ASSIGNMENT_OPERATOR
-	: TOKEN_EQUALS_SIGN
-	| TOKEN_STAR
-	;
-
-var_definition
-	: SIMPLE_TYPE
-	| TOKEN_LSQRBRKT composite_element_list TOKEN_RSQRBRKT
-	;
 
 SIMPLE_TYPE
 	: TOKEN_INTEGER
@@ -69,11 +55,95 @@ SIMPLE_TYPE
 	| TOKEN_FALSE
 	;
 
-composite_element_list
-	: composite_element_list SIMPLE_TYPE
-	| composite_element_list TOKEN_SEMICOLON
+// We don't have to implement declarations
+
+composite_element_list_initialization
+	: composite_element_list_initialization SIMPLE_TYPE
+	| composite_element_list_initialization TOKEN_SEMICOLON
 	| SIMPLE_TYPE
 	;
+
+primary_expression
+	: TOKEN_IDENTIFIER
+	| SIMPLE_TYPE
+	| TOKEN_LPAREN arithmetic_boolean_expressions_sentence TOKEN_RPAREN
+	;
+
+postfix_expression
+	: primary_expression
+	| postfix_expression TOKEN_LSQRBRKT arithmetic_boolean_expressions_sentence TOKEN_RSQRBRKT // index access, still missing multi dimensions
+	| TOKEN_LSQRBRKT composite_element_list_initialization TOKEN_RSQRBRKT // initialization TODO: Is this correct?
+	;
+
+unary_expression
+	: postfix_expression
+	| unary_operator postfix_expression
+	| TOKEN_FUNC_TRANSPOSE TOKEN_LPAREN TOKEN_IDENTIFIER TOKEN_RPAREN
+
+unary_operator
+	: TOKEN_PLUS
+	| TOKEN_MINUS
+	| TOKEN_BANG
+	;
+
+multiplicative_expression
+	: unary_expression
+	| multiplicative_expression TOKEN_STAR unary_expression
+	| multiplicative_expression TOKEN_SLASH unary_expression
+	| multiplicative_expression TOKEN_PERCENT unary_expression
+	;
+
+additive_expression
+	: multiplicative_expression
+	| additive_expression TOKEN_PLUS multiplicative_expression
+	| additive_expression TOKEN_MINUS multiplicative_expression
+	;
+
+relational_expression
+	: additive_expression
+	| relational_expression TOKEN_LOWER additive_expression
+	| relational_expression TOKEN_LOWER_EQUAL additive_expression
+	| relational_expression TOKEN_GREATER additive_expression
+	| relational_expression TOKEN_GREATER_EQUAL additive_expression
+	;
+
+equality_expression
+	: relational_expression
+	| equality_expression TOKEN_DOUBLE_EQUAL relational_expression
+	| equality_expression TOKEN_BANG_EQUAL relational_expression
+	;
+
+logical_and_expression
+	: equality_expression
+	| logical_and_expression TOKEN_AND equality_expression
+	;
+
+logical_or_expression
+	: logical_and_expression
+	| logical_or_expression TOKEN_OR logical_and_expression
+
+arithmetic_boolean_expressions_sentence
+	: logical_or_expression
+	;
+
+assignment_expression
+	: TOKEN_IDENTIFIER TOKEN_EQUALS_SIGN arithmetic_boolean_expressions_sentence
+	;
+
+expression
+	: TOKEN_NEWLINE
+	| assignment_expression TOKEN_NEWLINE
+	| arithmetic_boolean_expressions_sentence TOKEN_NEWLINE
+	;
+
+statement_list
+	: statement_list expression
+	| expression
+	;
+
+program
+    : statement_list
+    ;
 
 %%
 

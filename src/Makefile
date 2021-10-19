@@ -3,7 +3,7 @@ CODE_DIR = src
 FILES = Lexer.c Parser.c main.c
 
 CC = gcc
-CFLAGS = -std=c17 -Wall -g
+CFLAGS = -Wall -g
 LIB = -lfl
 
 LFLAGS = --debug

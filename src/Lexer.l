@@ -1,10 +1,15 @@
 %{
+  #include <stdio.h>
+  #include <stdlib.h>
+  #include <string.h>
+  #include <stdbool.h>
+
   #include "./Parser.h"
 %}
 
 %option outfile="Lexer.c" header-file="Lexer.h"
 %option warn nodefault
-%option reentrant noyywrap never-interactive nounistd yylineno
+%option reentrant noyywrap never-interactive yylineno
 %option bison-bridge bison-locations
 %option nounput noinput 
 
@@ -21,7 +26,7 @@ STRING \".*\"
 
 %%
 
-[ \t\n\r]+    { /* ignore whitespaces, newlines and tabs */ }
+[ \t]+    { /* ignore whitespaces, newlines and tabs */ }
 
 "#"                           { BEGIN(COMMENT_SINGLELINE); }
 <COMMENT_SINGLELINE>{NEWLINE} { BEGIN(INITIAL); }
@@ -33,12 +38,14 @@ STRING \".*\"
 <COMMENT_MULTILINE>.          { }
 
 ";"           { return TOKEN_SEMICOLON; }
+","           { return TOKEN_COMMA; }
 "\["          { return TOKEN_LSQRBRKT; }
 "\]"          { return TOKEN_RSQRBRKT; }
 
 "="           { return TOKEN_EQUALS_SIGN; }
 "*"           { return TOKEN_STAR; }
 "+"           { return TOKEN_PLUS; }
+"-"           { return TOKEN_MINUS; }
 "^"           { return TOKEN_CARET; }
 "/"           { return TOKEN_SLASH; }
 "%"           { return TOKEN_PERCENT; }
@@ -46,7 +53,7 @@ STRING \".*\"
 ")"           { return TOKEN_RPAREN; }
 
 "=="          { return TOKEN_DOUBLE_EQUAL; }
-"!="          { return TOKEN_EXCLAMATION_EQUAL; }
+"!="          { return TOKEN_BANG_EQUAL; }
 ">"           { return TOKEN_GREATER; }
 "<"           { return TOKEN_LOWER; }
 ">="          { return TOKEN_GREATER_EQUAL; }
@@ -58,10 +65,13 @@ STRING \".*\"
 "||"          { return TOKEN_OR; }
 "!"           { return TOKEN_BANG; }
 
-{FLOAT}       { return TOKEN_FLOAT; }
-{INTEGER}     { return TOKEN_INTEGER; }
-{STRING}      { return TOKEN_STRING; }
-{IDENTIFIER}  { return TOKEN_IDENTIFIER; }
+"transpose"           { return TOKEN_FUNC_TRANSPOSE; }
+
+{NEWLINE}     { return TOKEN_NEWLINE; }
+{FLOAT}       { sscanf(yytext, "%f", &yylval->floaT); return TOKEN_FLOAT; }
+{INTEGER}     { sscanf(yytext, "%d", &yylval->integer); return TOKEN_INTEGER; }
+{STRING}      { yylval->string = strdup(yytext); return TOKEN_STRING; }
+{IDENTIFIER}  { yylval->identifier = strdup(yytext); return TOKEN_IDENTIFIER; }
 
 .             { fprintf(stderr, "!!!! Lexer - Unexpected: %s\n", yytext); }
 
