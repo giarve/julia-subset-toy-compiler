@@ -46,7 +46,7 @@ STRING \".*\"
 "*"           { return TOKEN_STAR; }
 "+"           { return TOKEN_PLUS; }
 "-"           { return TOKEN_MINUS; }
-"^"           { return TOKEN_CARET; }
+"^"           { return TOKEN_CIRCUMFLEX; }
 "/"           { return TOKEN_SLASH; }
 "%"           { return TOKEN_PERCENT; }
 "("           { return TOKEN_LPAREN; }
@@ -65,7 +65,7 @@ STRING \".*\"
 "||"          { return TOKEN_OR; }
 "!"           { return TOKEN_BANG; }
 
-"transpose"           { return TOKEN_FUNC_TRANSPOSE; }
+"transpose"   { return TOKEN_FUNC_TRANSPOSE; }
 
 {NEWLINE}     { return TOKEN_NEWLINE; }
 {FLOAT}       { sscanf(yytext, "%f", &yylval->floaT); return TOKEN_FLOAT; }

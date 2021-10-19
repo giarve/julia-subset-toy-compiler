@@ -5,7 +5,7 @@ s = "Hello"
 b = true
 
 # Arithmetic expressions
-# 5 + i * 5^3
+5 + i * 5^3
 i / 2
 s * ", " * s
 
@@ -24,8 +24,7 @@ b || !b && b && !b
 
 
 # Sentences: the combination of any of the above
-# id = b || !b && b && !(5 + i * 5^3)
-id = b || !b && b && !(5 + i * 5)
+id = b || !b && b && !(5 + i * 5^3)
 
 
 # Arrays and vectors

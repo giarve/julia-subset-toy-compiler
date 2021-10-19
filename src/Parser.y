@@ -34,7 +34,7 @@
 %token <string> TOKEN_STRING 
 %token <identifier> TOKEN_IDENTIFIER
 %token TOKEN_EQUALS_SIGN TOKEN_STAR TOKEN_PLUS TOKEN_MINUS
-%token TOKEN_LPAREN TOKEN_RPAREN TOKEN_PERCENT TOKEN_CARET TOKEN_SLASH TOKEN_SEMICOLON TOKEN_COMMA
+%token TOKEN_LPAREN TOKEN_RPAREN TOKEN_PERCENT TOKEN_CIRCUMFLEX TOKEN_SLASH TOKEN_SEMICOLON TOKEN_COMMA
 %token TOKEN_AND TOKEN_OR TOKEN_BANG
 %token TOKEN_DOUBLE_EQUAL TOKEN_BANG_EQUAL 
 %token TOKEN_GREATER TOKEN_LOWER TOKEN_GREATER_EQUAL TOKEN_LOWER_EQUAL
@@ -47,7 +47,7 @@
 
 %%
 
-SIMPLE_TYPE
+CONSTANT
 	: TOKEN_INTEGER
 	| TOKEN_FLOAT
 	| TOKEN_STRING
@@ -58,14 +58,14 @@ SIMPLE_TYPE
 // We don't have to implement declarations
 
 composite_element_list_initialization
-	: composite_element_list_initialization SIMPLE_TYPE
+	: composite_element_list_initialization CONSTANT
 	| composite_element_list_initialization TOKEN_SEMICOLON
-	| SIMPLE_TYPE
+	| CONSTANT
 	;
 
 primary_expression
 	: TOKEN_IDENTIFIER
-	| SIMPLE_TYPE
+	| CONSTANT
 	| TOKEN_LPAREN arithmetic_boolean_expressions_sentence TOKEN_RPAREN
 	;
 
@@ -93,10 +93,15 @@ multiplicative_expression
 	| multiplicative_expression TOKEN_PERCENT unary_expression
 	;
 
-additive_expression
+exponentiative_expression
 	: multiplicative_expression
-	| additive_expression TOKEN_PLUS multiplicative_expression
-	| additive_expression TOKEN_MINUS multiplicative_expression
+	| exponentiative_expression TOKEN_CIRCUMFLEX multiplicative_expression
+	;
+
+additive_expression
+	: exponentiative_expression
+	| additive_expression TOKEN_PLUS exponentiative_expression
+	| additive_expression TOKEN_MINUS exponentiative_expression
 	;
 
 relational_expression
