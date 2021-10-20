@@ -24,8 +24,14 @@
 }
 
 %union {
+	struct identifier_type
+	{
+		char *value;
+		char *type;
+		char *name;
+	} identifier;
+
 	char *string;
-	char *identifier; // make it a struct
 	int integer;
 	float floaT;
 	bool true_or_false;

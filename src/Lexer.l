@@ -68,10 +68,10 @@ STRING \".*\"
 "transpose"   { return TOKEN_FUNC_TRANSPOSE; }
 
 {NEWLINE}+    { return TOKEN_NEWLINE; }
-{FLOAT}       { sscanf(yytext, "%f", &yylval->floaT); return TOKEN_FLOAT; }
-{INTEGER}     { sscanf(yytext, "%d", &yylval->integer); return TOKEN_INTEGER; }
-{STRING}      { yylval->string = strdup(yytext); return TOKEN_STRING; }
-{IDENTIFIER}  { yylval->identifier = strdup(yytext); return TOKEN_IDENTIFIER; }
+{FLOAT}       { sscanf(yytext, "%f", &yylval->floaT);     return TOKEN_FLOAT; }
+{INTEGER}     { sscanf(yytext, "%d", &yylval->integer);   return TOKEN_INTEGER; }
+{STRING}      { yylval->string = strdup(yytext);          return TOKEN_STRING; }
+{IDENTIFIER}  { yylval->identifier.name = strdup(yytext); return TOKEN_IDENTIFIER; }
 
 .             { fprintf(stderr, "Lexical error - Unexpected: %s\n", yytext); }
 
