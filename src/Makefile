@@ -4,7 +4,7 @@ FILES = Lexer.c Parser.c main.c
 
 CC = gcc
 CFLAGS = -Wall -g
-LIB = -lfl
+LIB = -lfl -lm
 
 LFLAGS = --debug
 YFLAGS = --debug --report=all

@@ -26,6 +26,11 @@ b || !b && b && !b
 # Sentences: the combination of any of the above
 id = b || !b && b && !(5 + i * 5^3)
 
+#= multi line in single line =#
+
+#= multi
+line
+comment #  =#
 
 # Arrays and vectors
 

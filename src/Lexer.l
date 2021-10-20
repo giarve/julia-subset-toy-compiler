@@ -26,16 +26,16 @@ STRING \".*\"
 
 %%
 
-[ \t]+    { /* ignore whitespaces, newlines and tabs */ }
+[ \t]+    { /* ignore whitespaces, NEWLINEs and tabs */ }
 
-"#"                           { BEGIN(COMMENT_SINGLELINE); }
-<COMMENT_SINGLELINE>{NEWLINE} { BEGIN(INITIAL); }
-<COMMENT_SINGLELINE>.         { }
+"#"                            { BEGIN(COMMENT_SINGLELINE); }
+<COMMENT_SINGLELINE>{NEWLINE}+ { BEGIN(INITIAL); }
+<COMMENT_SINGLELINE>.          { }
 
-"#="                          { BEGIN(COMMENT_MULTILINE); }
-<COMMENT_MULTILINE>"=#"       { BEGIN(INITIAL); }
-<COMMENT_MULTILINE>{NEWLINE}  { }
-<COMMENT_MULTILINE>.          { }
+"#="                              { BEGIN(COMMENT_MULTILINE); }
+<COMMENT_MULTILINE>"=#"{NEWLINE}* { BEGIN(INITIAL); }
+<COMMENT_MULTILINE>{NEWLINE}      { }
+<COMMENT_MULTILINE>.              { }
 
 ";"           { return TOKEN_SEMICOLON; }
 ","           { return TOKEN_COMMA; }
@@ -67,12 +67,12 @@ STRING \".*\"
 
 "transpose"   { return TOKEN_FUNC_TRANSPOSE; }
 
-{NEWLINE}     { return TOKEN_NEWLINE; }
+{NEWLINE}+    { return TOKEN_NEWLINE; }
 {FLOAT}       { sscanf(yytext, "%f", &yylval->floaT); return TOKEN_FLOAT; }
 {INTEGER}     { sscanf(yytext, "%d", &yylval->integer); return TOKEN_INTEGER; }
 {STRING}      { yylval->string = strdup(yytext); return TOKEN_STRING; }
 {IDENTIFIER}  { yylval->identifier = strdup(yytext); return TOKEN_IDENTIFIER; }
 
-.             { fprintf(stderr, "!!!! Lexer - Unexpected: %s\n", yytext); }
+.             { fprintf(stderr, "Lexical error - Unexpected: %s\n", yytext); }
 
 %%

@@ -25,7 +25,7 @@
 
 %union {
 	char *string;
-	char *identifier;
+	char *identifier; // make it a struct
 	int integer;
 	float floaT;
 	bool true_or_false;
@@ -49,6 +49,8 @@
 %start program
 
 %%
+
+// reverse order program top to bottom
 
 CONSTANT
 	: TOKEN_INTEGER
@@ -130,7 +132,9 @@ logical_or_expression
 	: logical_and_expression
 	| logical_or_expression TOKEN_OR logical_and_expression
 
-arithmetic_boolean_expressions_sentence
+// Problema, no pot distingir tal i com esta fet entre una i altra
+// separar aritmetica i booleana? o fer IDENTIFIER_bool com diria a classe
+arithmetic_boolean_expressions_sentence 
 	: logical_or_expression
 	;
 
@@ -139,8 +143,7 @@ assignment_expression
 	;
 
 expression
-	: TOKEN_NEWLINE
-	| assignment_expression TOKEN_NEWLINE
+	: assignment_expression TOKEN_NEWLINE
 	| arithmetic_boolean_expressions_sentence TOKEN_NEWLINE
 	;
 
