@@ -53,10 +53,10 @@ dkms.conf
 
 .vscode
 
-Parser.c
-Parser.h
-Parser.output
-Lexer.c
-Lexer.h
 minijuliac
 example.out.txt
+parser.hh
+parser.cc
+parser.html
+parser.xml
+location.hh

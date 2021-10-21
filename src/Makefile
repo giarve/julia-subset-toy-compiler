@@ -1,27 +1,40 @@
 CODE_DIR = src
 
-FILES = Lexer.c Parser.c main.c
+BISON = bison
+CXX = g++
+CXX_FLAGS = -Wall -g -lm
+FLEX = flex
+BASE = minijuliac
 
-CC = gcc
-CFLAGS = -Wall -g
-LIB = -lfl -lm
+all: $(BASE)
 
-LFLAGS = --debug
-YFLAGS = --debug --report=all
+%.cc %.hh %.html %.gv: %.yy
+	$(BISON) $(BISONFLAGS) --html -o $*.cc $<
 
-COMPILER_NAME = minijuliac
+%.cc: %.ll
+	$(FLEX) $(FLEXFLAGS) -o$@ $<
 
-$(COMPILER_NAME): $(FILES)
-	$(CC) $(CFLAGS) $(LIB) $(FILES) -o $(COMPILER_NAME) 
+%.o: %.cc
+	$(CXX) $(CXXFLAGS) -c -o$@ $<
 
-Lexer.c: Lexer.l
-	flex $(LFLAGS) Lexer.l
+$(BASE): $(BASE).o driver.o parser.o scanner.o
+	$(CXX) $(CXX_FLAGS) -o $@ $^
 
-Parser.c: Parser.y Lexer.c
-	bison $(YFLAGS) Parser.y
+$(BASE).o: parser.hh
+parser.o: parser.hh
+scanner.o: parser.hh
 
-examples: $(COMPILER_NAME)
-	./$(COMPILER_NAME) example.jl example.out.txt
+examples: $(BASE)
+	./$(BASE) example.jl example.out.txt
+
+run: $(BASE)
+	@echo "Type an expression. Quit with ctrl-d."
+	./$< -
+
+CLEANFILES =										\
+  $(BASE) *.o										\
+  parser.hh parser.cc parser.output parser.xml parser.html location.hh	\
+  scanner.cc
 
 clean:
-	rm -f *.o *~ {Lexer,Parser}.{c,h} $(COMPILER_NAME)
+	rm -f $(CLEANFILES)
