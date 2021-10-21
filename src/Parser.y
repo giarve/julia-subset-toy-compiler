@@ -56,63 +56,46 @@
 
 %%
 
-// reverse order program top to bottom
 
-CONSTANT
-	: TOKEN_INTEGER
-	| TOKEN_FLOAT
-	| TOKEN_STRING
-	| TOKEN_TRUE
-	| TOKEN_FALSE
+program
+    : statement_list
+    ;
+
+statement_list
+	: statement_list expression
+	| expression
 	;
 
-// We don't have to implement declarations
-
-composite_element_list_initialization
-	: composite_element_list_initialization CONSTANT
-	| composite_element_list_initialization TOKEN_SEMICOLON
-	| CONSTANT
+expression
+	: assignment_expression TOKEN_NEWLINE					{ /* printf("%s", $1); */ }
+	| arithmetic_boolean_expressions_sentence TOKEN_NEWLINE	{ /* printf("%s", $1); */ }
+	// | boolean_expression
+	// | arithmetic_expression
 	;
 
-primary_expression
-	: TOKEN_IDENTIFIER
-	| CONSTANT
-	| TOKEN_LPAREN arithmetic_boolean_expressions_sentence TOKEN_RPAREN
-	| TOKEN_LSQRBRKT composite_element_list_initialization TOKEN_RSQRBRKT // array/vector
+assignment_expression
+	: TOKEN_IDENTIFIER TOKEN_EQUALS_SIGN arithmetic_boolean_expressions_sentence {/* $$ = $1 + '=' concat $2 */}
 	;
 
-postfix_expression
-	: primary_expression
-	| postfix_expression TOKEN_LSQRBRKT arithmetic_boolean_expressions_sentence TOKEN_RSQRBRKT // index access
+// IDENTIFIER_bool or separate, look for examples
+arithmetic_boolean_expressions_sentence 
+	: logical_or_expression
 	;
 
-unary_expression
-	: postfix_expression
-	| unary_operator postfix_expression
-	| TOKEN_FUNC_TRANSPOSE TOKEN_LPAREN TOKEN_IDENTIFIER TOKEN_RPAREN
-
-unary_operator
-	: TOKEN_PLUS
-	| TOKEN_MINUS
-	| TOKEN_BANG
+logical_or_expression
+	: logical_and_expression
+	| logical_or_expression TOKEN_OR logical_and_expression
 	;
 
-multiplicative_expression
-	: unary_expression
-	| multiplicative_expression TOKEN_STAR unary_expression
-	| multiplicative_expression TOKEN_SLASH unary_expression
-	| multiplicative_expression TOKEN_PERCENT unary_expression
+logical_and_expression
+	: equality_expression
+	| logical_and_expression TOKEN_AND equality_expression
 	;
 
-exponentiative_expression
-	: multiplicative_expression
-	| exponentiative_expression TOKEN_CIRCUMFLEX multiplicative_expression
-	;
-
-additive_expression
-	: exponentiative_expression
-	| additive_expression TOKEN_PLUS exponentiative_expression
-	| additive_expression TOKEN_MINUS exponentiative_expression
+equality_expression
+	: relational_expression
+	| equality_expression TOKEN_DOUBLE_EQUAL relational_expression
+	| equality_expression TOKEN_BANG_EQUAL relational_expression
 	;
 
 relational_expression
@@ -123,44 +106,61 @@ relational_expression
 	| relational_expression TOKEN_GREATER_EQUAL additive_expression
 	;
 
-equality_expression
-	: relational_expression
-	| equality_expression TOKEN_DOUBLE_EQUAL relational_expression
-	| equality_expression TOKEN_BANG_EQUAL relational_expression
+additive_expression
+	: exponentiative_expression
+	| additive_expression TOKEN_PLUS exponentiative_expression
+	| additive_expression TOKEN_MINUS exponentiative_expression
 	;
 
-logical_and_expression
-	: equality_expression
-	| logical_and_expression TOKEN_AND equality_expression
+exponentiative_expression
+	: multiplicative_expression
+	| exponentiative_expression TOKEN_CIRCUMFLEX multiplicative_expression
 	;
 
-logical_or_expression
-	: logical_and_expression
-	| logical_or_expression TOKEN_OR logical_and_expression
-
-// Problema, no pot distingir tal i com esta fet entre una i altra
-// separar aritmetica i booleana? o fer IDENTIFIER_bool com diria a classe
-arithmetic_boolean_expressions_sentence 
-	: logical_or_expression
+multiplicative_expression
+	: unary_expression
+	| multiplicative_expression TOKEN_STAR unary_expression
+	| multiplicative_expression TOKEN_SLASH unary_expression
+	| multiplicative_expression TOKEN_PERCENT unary_expression
 	;
 
-assignment_expression
-	: TOKEN_IDENTIFIER TOKEN_EQUALS_SIGN arithmetic_boolean_expressions_sentence
+UNARY_OPERATOR
+	: TOKEN_PLUS
+	| TOKEN_MINUS
+	| TOKEN_BANG
 	;
 
-expression
-	: assignment_expression TOKEN_NEWLINE
-	| arithmetic_boolean_expressions_sentence TOKEN_NEWLINE
+unary_expression
+	: postfix_expression
+	| UNARY_OPERATOR postfix_expression
+	| TOKEN_FUNC_TRANSPOSE TOKEN_LPAREN TOKEN_IDENTIFIER TOKEN_RPAREN
 	;
 
-statement_list
-	: statement_list expression
-	| expression
+postfix_expression
+	: primary_expression
+	| postfix_expression TOKEN_LSQRBRKT arithmetic_boolean_expressions_sentence TOKEN_RSQRBRKT // index access
 	;
 
-program
-    : statement_list
-    ;
+primary_expression
+	: TOKEN_IDENTIFIER
+	| CONSTANT
+	| TOKEN_LPAREN arithmetic_boolean_expressions_sentence TOKEN_RPAREN
+	| TOKEN_LSQRBRKT composite_element_list_initialization TOKEN_RSQRBRKT // array/vector
+	;
+
+composite_element_list_initialization
+	: composite_element_list_initialization CONSTANT
+	| composite_element_list_initialization TOKEN_SEMICOLON
+	| CONSTANT
+	;
+
+CONSTANT
+	: TOKEN_INTEGER
+	| TOKEN_FLOAT
+	| TOKEN_STRING
+	| TOKEN_TRUE
+	| TOKEN_FALSE
+	;
 
 %%
 
