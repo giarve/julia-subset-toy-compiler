@@ -12,8 +12,10 @@
 %option noyywrap nounput noinput batch debug
 
 %{
-  // A number symbol corresponding to the value in S.
   yy::parser::symbol_type make_INTEGER (const std::string &s, const yy::parser::location_type& loc);
+  yy::parser::symbol_type make_FLOAT (const std::string &s, const yy::parser::location_type& loc);
+  yy::parser::symbol_type make_IDENTIFIER (const std::string &s, const yy::parser::location_type& loc);
+  yy::parser::symbol_type make_STRING (const std::string &s, const yy::parser::location_type& loc);
 %}
 
 %x COMMENT_MULTILINE
@@ -79,12 +81,12 @@ NEWLINE \n|\r\n
 "transpose"   return yy::parser::make_FUNC_TRANSPOSE (loc);
 
 {NEWLINE}+    return yy::parser::make_NEWLINE    (loc);
-{FLOAT}       return yy::parser::make_FLOAT      (loc);
+{FLOAT}       return make_FLOAT(yytext, loc);
 {INTEGER}     return make_INTEGER(yytext, loc);
-\".*\"        return yy::parser::make_STRING     (loc);
-{IDENTIFIER}  return yy::parser::make_IDENTIFIER (loc);
+\".*\"        return make_STRING(yytext, loc);
+{IDENTIFIER}  return make_IDENTIFIER(yytext, loc);
 
-.             throw yy::parser::syntax_error(loc, "invalid character: " + std::string(yytext));
+.             throw yy::parser::syntax_error(loc, "Scanner - Invalid char: " + std::string(yytext));
 
 <<EOF>>       return yy::parser::make_YYEOF (loc);
 
@@ -97,8 +99,28 @@ yy::parser::symbol_type make_INTEGER(const std::string &s, const yy::parser::loc
     long n = strtol(s.c_str(), NULL, 10);
     if (!(INT_MIN <= n && n <= INT_MAX && errno != ERANGE))
         throw yy::parser::syntax_error(loc, "integer is out of range: " + s);
-    return yy::parser::make_INTEGER(1, loc);
+    return yy::parser::make_INTEGER(n, loc);
 }
+
+
+yy::parser::symbol_type make_FLOAT(const std::string &s, const yy::parser::location_type &loc)
+{
+    float n = strtof(s.c_str(), NULL);
+    return yy::parser::make_FLOAT(n, loc);
+}
+
+yy::parser::symbol_type make_IDENTIFIER(const std::string &s, const yy::parser::location_type &loc)
+{
+    variant::identifier id;
+    id.name = s;
+    return yy::parser::make_IDENTIFIER(id, loc);
+}
+
+yy::parser::symbol_type make_STRING(const std::string &s, const yy::parser::location_type &loc)
+{
+    return yy::parser::make_STRING(s, loc);
+}
+
 
 void driver::scan_begin()
 {

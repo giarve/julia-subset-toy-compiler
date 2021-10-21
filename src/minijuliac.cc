@@ -2,8 +2,6 @@
 
 #include "driver.hh"
 
-#define DEBUG_ENABLED true
-
 int main(int argc, char *argv[])
 {
     if (argc < 2)
@@ -13,10 +11,11 @@ int main(int argc, char *argv[])
     }
 
     driver drv;
-    drv.trace_parsing = DEBUG_ENABLED;
-    drv.trace_scanning = DEBUG_ENABLED;
-    drv.parse(argv[1]);
-    std::cout << drv.result << '\n';
+    drv.trace_parsing = false;
+    drv.trace_scanning = true;
+    
+    if(!drv.parse(argv[1]))
+        std::cout << "Error code: " << drv.result << '\n';
 
     printf("=== Finished successfully === \n");
     return 0;

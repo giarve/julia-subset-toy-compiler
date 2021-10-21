@@ -10,6 +10,7 @@
 
 %code requires {
   #include <string>
+  #include "variant.hh"
   class driver;
 }
 
@@ -22,29 +23,16 @@
 %define parse.lac full
 
 %code {
-# include "driver.hh"
+  #include "driver.hh"
 }
 
-/*%union {
-	struct
-	{
-		char *value;
-		char *type;
-		char *name;
-	} identifier;
 
-	char *string;
-	int integer;
-	float floaT;
-	bool true_or_false;
-}*/
-
-%define api.token.prefix {TOK_}
+%define api.token.prefix {TOKEN_}
 
 %token <int> INTEGER
-%token FLOAT
-%token STRING 
-%token IDENTIFIER
+%token <float> FLOAT
+%token <std::string> STRING 
+%token <variant::identifier> IDENTIFIER
 %token EQUALS_SIGN STAR PLUS MINUS
 %token LPAREN RPAREN PERCENT CIRCUMFLEX SLASH SEMICOLON COMMA
 %token AND OR BANG
@@ -56,7 +44,9 @@
 %token FUNC_TRANSPOSE
 %token NEWLINE
 
+%printer { yyo << $$.name << ": " << $$.type << " = " << $$.value; } <variant::identifier>;
 %printer { yyo << $$; } <*>;
+
 
 %%
 %start program;
