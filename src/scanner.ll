@@ -111,9 +111,7 @@ yy::parser::symbol_type make_FLOAT(const std::string &s, const yy::parser::locat
 
 yy::parser::symbol_type make_IDENTIFIER(const std::string &s, const yy::parser::location_type &loc)
 {
-    variant::identifier id;
-    id.name = s;
-    return yy::parser::make_IDENTIFIER(id, loc);
+    return yy::parser::make_IDENTIFIER(s, loc);
 }
 
 yy::parser::symbol_type make_STRING(const std::string &s, const yy::parser::location_type &loc)
