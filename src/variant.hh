@@ -2,6 +2,7 @@
 #define VARIANT_HH
 
 #include <string>
+#include <sstream>
 #include <map>
 #include <variant>
 #include <optional>
@@ -26,10 +27,18 @@ namespace variant
 			return *this;
 		}
 
-		friend std::ostream& operator<< (std::ostream& stream, const operable& op) {
-			// TODO: visit op value and return a string
-            return stream;
-        }
+		friend std::ostream &operator<<(std::ostream &stream, const operable &op)
+		{
+			std::visit([&](const auto &p)
+					   {
+						   std::ostringstream v;
+						   v << p;
+						   std::string s_param(v.str());
+						   stream << s_param;
+					   },
+					   op.value);
+			return stream;
+		}
 	};
 
 	class array
