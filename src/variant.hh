@@ -7,12 +7,23 @@
 #include <variant>
 #include <optional>
 
+template <class... Ts>
+struct overloaded : Ts...
+{
+	using Ts::operator()...;
+};
+
+template <class... Ts>
+overloaded(Ts...) -> overloaded<Ts...>;
+
 namespace variant
 {
+
+	using operable_variant_t = std::variant<int, float, std::string>;
+
 	class operable
 	{
 	public:
-		using operable_variant_t = std::variant<int, float, std::string>;
 		operable_variant_t value;
 		std::optional<std::string> identifier;
 
@@ -25,6 +36,42 @@ namespace variant
 		{
 			value = rhs;
 			return *this;
+		}
+
+		friend operable operator*(operable lhs,
+								  const operable &rhs)
+		{
+
+			lhs = std::visit(overloaded{
+
+								 [&](std::string lhs_arg) -> operable_variant_t
+								 {
+									 return std::visit(overloaded{[&](auto rhs_arg) -> operable_variant_t
+																  {
+																	  std::stringstream ss;
+																	  ss << lhs_arg << rhs_arg;
+																	  return ss.str();
+																  }},
+													   rhs.value);
+								 },
+								 [&](auto lhs_arg) -> operable_variant_t
+								 {
+									 return std::visit(overloaded{
+														   [&](auto rhs_arg) -> operable_variant_t
+														   {
+															   return rhs_arg * lhs_arg;
+														   },
+														   [&](std::string rhs_arg) -> operable_variant_t
+														   {
+															   std::stringstream ss;
+															   ss << lhs_arg << rhs_arg;
+															   return ss.str();
+														   },
+													   },
+													   rhs.value);
+								 }},
+							 lhs.value);
+			return lhs;
 		}
 
 		friend std::ostream &operator<<(std::ostream &stream, const operable &op)

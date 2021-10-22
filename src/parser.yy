@@ -10,6 +10,7 @@
 
 %code requires {
   #include <string>
+
   #include "variant.hh"
   class driver;
 }
@@ -24,7 +25,9 @@
 
 %code {
   #include "driver.hh"
+  #include <unordered_map>
 
+  std::unordered_map<std::string, variant::operable> symtab;
 }
 
 
@@ -68,7 +71,10 @@ statement_list
 	;
 
 expression
-	: assignment_expression NEWLINE						{ std::cout << $1.identifier.value() << " = " << $1 << std::endl; }
+	: assignment_expression NEWLINE { 
+		symtab[$1.identifier.value()] = $1;
+		std::cout << $1.identifier.value() << " = " << $1 << std::endl;
+	}
 	| arithmetic_boolean_expressions_sentence NEWLINE	{} 
 	// | boolean_expression
 	// | arithmetic_expression
@@ -124,7 +130,7 @@ exponentiative_expression
 
 multiplicative_expression
 	: unary_expression
-	| multiplicative_expression STAR unary_expression 		{ $$ = $1;  }
+	| multiplicative_expression STAR unary_expression 		{ $$ = $1 * $3;  }
 	| multiplicative_expression SLASH unary_expression		{ $$ = $1;  }
 	| multiplicative_expression PERCENT unary_expression	{ $$ = $1;  }
 	;
@@ -138,18 +144,18 @@ UNARY_OPERATOR
 unary_expression
 	: postfix_expression { $$ = $1;   }
 	| UNARY_OPERATOR postfix_expression { $$ = $2; }
-	| FUNC_TRANSPOSE LPAREN IDENTIFIER RPAREN
+	// | FUNC_TRANSPOSE LPAREN IDENTIFIER RPAREN
 	;
 
 postfix_expression
 	: primary_expression { $$ = $1;   }
-	//| postfix_expression LSQRBRKT arithmetic_boolean_expressions_sentence RSQRBRKT // index access
+	| postfix_expression LSQRBRKT arithmetic_boolean_expressions_sentence RSQRBRKT // index access
 	;
 
 primary_expression
 	: IDENTIFIER	{ $$.identifier = $1;  }
 	| CONSTANT		{ $$ = $1;  }
-	//| LPAREN arithmetic_boolean_expressions_sentence RPAREN { $$ = $2; }
+	| LPAREN arithmetic_boolean_expressions_sentence RPAREN { $$ = $2; }
 	| LSQRBRKT composite_element_list_initialization RSQRBRKT
 	;
 

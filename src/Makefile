@@ -2,7 +2,7 @@ CODE_DIR = src
 
 BISON = bison
 CXX = g++
-CXX_FLAGS = -Wall -g -lm -std=c++17
+CXX_FLAGS = -Wall -g -lm -std=c++20
 FLEX = flex
 BASE = minijuliac
 
