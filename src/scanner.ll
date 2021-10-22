@@ -124,11 +124,20 @@ yy::parser::symbol_type make_STRING(const std::string &s, const yy::parser::loca
 void driver::scan_begin()
 {
     yy_flex_debug = trace_scanning;
-    if (file.empty() || file == "-")
+
+    if (path_file_in.empty() || path_file_in == "-")
         yyin = stdin;
-    else if (!(yyin = fopen(file.c_str(), "r")))
+    else if (!(yyin = fopen(path_file_in.c_str(), "r")))
     {
-        std::cerr << "cannot open " << file << ": " << strerror(errno) << '\n';
+        std::cerr << "cannot open " << path_file_in << ": " << strerror(errno) << '\n';
+        exit(EXIT_FAILURE);
+    }
+
+    if (path_file_out.empty() || path_file_out == "-")
+        yyout = stdout;
+    else if (!(yyout = fopen(path_file_out.c_str(), "w")))
+    {
+        std::cerr << "cannot open " << path_file_out << ": " << strerror(errno) << '\n';
         exit(EXIT_FAILURE);
     }
 }
@@ -136,4 +145,5 @@ void driver::scan_begin()
 void driver::scan_end()
 {
     fclose(yyin);
+    fclose(yyout);
 }

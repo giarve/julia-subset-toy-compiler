@@ -22,9 +22,13 @@ public:
   int result;
 
   // Run the parser on file F.  Return 0 on success.
-  int parse(const std::string &f);
-  // The name of the file being parsed.
-  std::string file;
+  int parse(const std::string &fin, const std::string &fout);
+
+   // The name of the file being parsed.
+  std::string path_file_in; 
+
+  std::string path_file_out;
+
   // Whether to generate parser debug traces.
   bool trace_parsing;
 

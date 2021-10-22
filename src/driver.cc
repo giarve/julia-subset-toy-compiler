@@ -8,10 +8,12 @@ driver::driver()
     variables["two"] = 2;
 }
 
-int driver::parse(const std::string &f)
+int driver::parse(const std::string &fin, const std::string &fout)
 {
-    file = f;
-    location.initialize(&file);
+    path_file_in = fin;
+    path_file_out = fout;
+
+    location.initialize(&path_file_in);
     scan_begin();
     yy::parser parse(*this);
     parse.set_debug_level(trace_parsing);
