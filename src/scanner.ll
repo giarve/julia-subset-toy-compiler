@@ -25,7 +25,8 @@ DIGIT [0-9]
 IDENTIFIER [a-zA-Z](_{0,1}[a-zA-Z0-9])*
 INTEGER {DIGIT}+
 FLOAT {INTEGER}\.{INTEGER}
-NEWLINE \n|\r\n
+NEWLINE \n
+BLANK [ \t\r]
 
 %{
   // Code run each time a pattern is matched.
@@ -39,15 +40,15 @@ NEWLINE \n|\r\n
   loc.step ();
 %}
 
-[ \t]+    { /* ignore whitespaces, NEWLINEs and tabs */ }
+{BLANK}+  loc.step ();
 
 "#"                            BEGIN(COMMENT_SINGLELINE);
-<COMMENT_SINGLELINE>{NEWLINE}+ BEGIN(INITIAL);
+<COMMENT_SINGLELINE>{NEWLINE}+ { loc.lines (yyleng); loc.step(); BEGIN(INITIAL); }
 <COMMENT_SINGLELINE>.          { }
 
 "#="                              BEGIN(COMMENT_MULTILINE);
-<COMMENT_MULTILINE>"=#"{NEWLINE}* BEGIN(INITIAL);
-<COMMENT_MULTILINE>{NEWLINE}      { }
+<COMMENT_MULTILINE>"=#"{NEWLINE}* { loc.lines(yyleng-2); loc.step(); BEGIN(INITIAL); }
+<COMMENT_MULTILINE>{NEWLINE}      { loc.lines(yyleng); loc.step(); }
 <COMMENT_MULTILINE>.              { }
 
 ";"           return yy::parser::make_SEMICOLON (loc);
@@ -80,7 +81,7 @@ NEWLINE \n|\r\n
 
 "transpose"   return yy::parser::make_FUNC_TRANSPOSE (loc);
 
-{NEWLINE}+    return yy::parser::make_NEWLINE    (loc);
+{NEWLINE}+    { loc.lines (yyleng); loc.step(); return yy::parser::make_NEWLINE(loc); }
 {FLOAT}       return make_FLOAT(yytext, loc);
 {INTEGER}     return make_INTEGER(yytext, loc);
 \".*\"        return make_STRING(yytext, loc);
