@@ -153,7 +153,12 @@ postfix_expression
 	;
 
 primary_expression
-	: IDENTIFIER	{ $$.identifier = $1;  }
+	: IDENTIFIER	{
+		if(!symtab.contains($1))
+			throw yy::parser::syntax_error(drv.location, "use of undeclared identifier: " + $1);
+
+		$$.identifier = $1;
+		}
 	| CONSTANT		{ $$ = $1;  }
 	| LPAREN arithmetic_boolean_expressions_sentence RPAREN { $$ = $2; }
 	| LSQRBRKT composite_element_list_initialization RSQRBRKT

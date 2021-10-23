@@ -1,8 +1,7 @@
 CODE_DIR = src
 
 BISON = bison
-CXX = g++
-CXX_FLAGS = -Wall -g -lm -std=c++20
+CXX = g++ -std=c++20 -Wall -g
 FLEX = flex
 BASE = minijuliac
 
@@ -15,10 +14,10 @@ all: $(BASE)
 	$(FLEX) $(FLEXFLAGS) -o$@ $<
 
 %.o: %.cc
-	$(CXX) $(CXXFLAGS) -c -o$@ $<
+	$(CXX) -c -o$@ $<
 
 $(BASE): $(BASE).o driver.o parser.o scanner.o variant.o
-	$(CXX) $(CXX_FLAGS) -o $@ $^
+	$(CXX) -o $@ $^
 
 $(BASE).o: parser.hh
 parser.o: parser.hh
