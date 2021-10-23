@@ -17,15 +17,17 @@ all: $(BASE)
 %.o: %.cc
 	$(CXX) $(CXXFLAGS) -c -o$@ $<
 
-$(BASE): $(BASE).o driver.o parser.o scanner.o
+$(BASE): $(BASE).o driver.o parser.o scanner.o variant.o
 	$(CXX) $(CXX_FLAGS) -o $@ $^
 
 $(BASE).o: parser.hh
 parser.o: parser.hh
+variant.o: parser.hh
 scanner.o: parser.hh
 
 examples: $(BASE)
-	./$(BASE) example.jl example.out.txt
+	./$(BASE) example_minimal.jl example.out.txt
+	#./$(BASE) example.jl example.out.txt
 
 run: $(BASE)
 	@echo "Type an expression. Quit with ctrl-d."
