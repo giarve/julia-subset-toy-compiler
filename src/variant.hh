@@ -14,15 +14,13 @@ struct overloaded : Ts...
 	using Ts::operator()...;
 };
 
-template <class... Ts>
-overloaded(Ts...) -> overloaded<Ts...>;
-
-template <typename T> concept integral_or_floating_point = std::integral<T> || std::floating_point<T>;
+template <typename T>
+concept integral_or_floating_point = std::integral<T> || std::floating_point<T>;
 
 namespace variant
 {
 
-	using operable_variant_t = std::variant<int, float, std::string>;
+	using operable_variant_t = std::variant<int, float, std::string, bool>;
 
 	std::string stringify_operable_variant(operable_variant_t v);
 	class operable
@@ -59,15 +57,16 @@ namespace variant
 		operable operator-();
 		operable operator!();
 
-		friend bool operator==(const operable& lhs, const operable& rhs){ return lhs.value == rhs.value; }
-		friend bool operator!=(const operable& lhs, const operable& rhs){ return lhs.value != rhs.value; }
-		friend bool operator< (const operable& lhs, const operable& rhs){ return lhs.value <  rhs.value; }
-		friend bool operator> (const operable& lhs, const operable& rhs){ return lhs.value >  rhs.value; }
-		friend bool operator<=(const operable& lhs, const operable& rhs){ return lhs.value <= rhs.value; }
-		friend bool operator>=(const operable& lhs, const operable& rhs){ return lhs.value >= rhs.value; }
+		friend bool operator==(const operable &lhs, const operable &rhs) { return lhs.value == rhs.value; }
+		friend bool operator!=(const operable &lhs, const operable &rhs) { return lhs.value != rhs.value; }
+		friend bool operator<(const operable &lhs, const operable &rhs) { return lhs.value < rhs.value; }
+		friend bool operator>(const operable &lhs, const operable &rhs) { return lhs.value > rhs.value; }
+		friend bool operator<=(const operable &lhs, const operable &rhs) { return lhs.value <= rhs.value; }
+		friend bool operator>=(const operable &lhs, const operable &rhs) { return lhs.value >= rhs.value; }
 
-		friend bool operator&&(const operable& lhs, const operable& rhs){ return false; }
-		friend bool operator||(const operable& lhs, const operable& rhs){ return false; }
+		/* Overloading like this breaks short-circuit evaluation */
+		friend bool operator&&(const operable &lhs, const operable &rhs);
+		friend bool operator||(const operable &lhs, const operable &rhs);
 	};
 
 	class array

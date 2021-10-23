@@ -22,9 +22,29 @@ b || !b
 (b || !b) && (b && !b)
 b || !b && b && !b
 
-
 # Sentences: the combination of any of the above
-id = b || !b && b && !(5 + i * 5^3)
+id = b || !b && b
+# && !(5 + i * 5^3)
+
+#=
+Julia has short-circuit evaluation, but we dont
+
+julia> b = true
+true
+
+julia> id = b || !b && b && !(5 + i * 5^3)
+true
+
+julia> id = !(5 + i * 5^3)
+ERROR: MethodError: no method matching !(::Int64)
+Closest candidates are:
+  !(::Bool) at bool.jl:33
+  !(::Function) at operators.jl:968
+  !(::Missing) at missing.jl:101
+Stacktrace:
+ [1] top-level scope
+   @ REPL[31]:1
+=#
 
 #= multi line in single line =#
 

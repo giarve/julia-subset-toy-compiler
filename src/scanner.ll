@@ -16,6 +16,7 @@
   yy::parser::symbol_type make_FLOAT (const std::string &s, const yy::parser::location_type& loc);
   yy::parser::symbol_type make_IDENTIFIER (const std::string &s, const yy::parser::location_type& loc);
   yy::parser::symbol_type make_STRING (const std::string &s, const yy::parser::location_type& loc);
+  yy::parser::symbol_type make_BOOLEAN (const std::string &s, const yy::parser::location_type& loc);
 %}
 
 %x COMMENT_MULTILINE
@@ -74,8 +75,8 @@ STRING \"([^\\\"]|\\.)*\"
 ">="          return yy::parser::make_GREATER_EQUAL (loc);
 "<="          return yy::parser::make_LOWER_EQUAL   (loc);
 
-"true"        return yy::parser::make_TRUE  (loc);
-"false"       return yy::parser::make_FALSE (loc);
+"true"        return make_BOOLEAN(yytext, loc);
+"false"       return make_BOOLEAN(yytext, loc);
 "&&"          return yy::parser::make_AND   (loc);
 "||"          return yy::parser::make_OR    (loc);
 "!"           return yy::parser::make_BANG  (loc);
@@ -123,6 +124,11 @@ yy::parser::symbol_type make_STRING(const std::string &s, const yy::parser::loca
     return yy::parser::make_STRING(without_quotes, loc);
 }
 
+yy::parser::symbol_type make_BOOLEAN(const std::string &s, const yy::parser::location_type &loc)
+{
+    bool b = (s == "true");
+    return yy::parser::make_BOOLEAN(b, loc);
+}
 
 void driver::scan_begin()
 {

@@ -37,13 +37,12 @@
 %token <float> FLOAT
 %token <std::string> STRING 
 %token <std::string> IDENTIFIER
+%token <bool> BOOLEAN
 %token EQUALS_SIGN STAR PLUS MINUS
 %token LPAREN RPAREN PERCENT CIRCUMFLEX SLASH SEMICOLON COMMA
 %token AND OR BANG
 %token DOUBLE_EQUAL BANG_EQUAL 
 %token GREATER LOWER GREATER_EQUAL LOWER_EQUAL
-%token TRUE
-%token FALSE
 %token RSQRBRKT LSQRBRKT
 %token FUNC_TRANSPOSE
 %token NEWLINE
@@ -53,10 +52,7 @@
 %nterm <variant::operable> exponentiative_expression multiplicative_expression unary_expression postfix_expression
 %nterm <variant::operable> additive_expression primary_expression assignment_expression CONSTANT
 
-// %printer { yyo << $$.value.type().name(); } <variant::operable>;
-// %printer { yyo << $$.name << ": " << $$.value.type().name() << " = "; /* << $$.value; */ } <variant::identifier>;
-// %printer { yyo << $$; } <*>;
-
+%printer { yyo << $$; } <*>; // debugging print
 
 %%
 %start program;
@@ -120,21 +116,21 @@ relational_expression
 	;
 
 additive_expression
-	: exponentiative_expression { $$ = $1;  }
-	| additive_expression PLUS exponentiative_expression { $$ = $1 + $3;  }
-	| additive_expression MINUS exponentiative_expression { $$ = $1 - $3;  }
-	;
-
-exponentiative_expression
 	: multiplicative_expression { $$ = $1;  }
-	| exponentiative_expression CIRCUMFLEX multiplicative_expression { $$ = $1 ^ $3;  }
+	| additive_expression PLUS multiplicative_expression { $$ = $1 + $3;  }
+	| additive_expression MINUS multiplicative_expression { $$ = $1 - $3;  }
 	;
 
 multiplicative_expression
-	: unary_expression
-	| multiplicative_expression STAR unary_expression 		{ $$ = $1 * $3;  }
-	| multiplicative_expression SLASH unary_expression		{ $$ = $1 / $3;  }
-	| multiplicative_expression PERCENT unary_expression	{ $$ = $1 % $3;  }
+	: exponentiative_expression { $$ = $1;  }
+	| multiplicative_expression STAR exponentiative_expression 		{ $$ = $1 * $3;  }
+	| multiplicative_expression SLASH exponentiative_expression		{ $$ = $1 / $3;  }
+	| multiplicative_expression PERCENT exponentiative_expression	{ $$ = $1 % $3;  }
+	;
+
+exponentiative_expression
+	: unary_expression { $$ = $1;  }
+	| exponentiative_expression CIRCUMFLEX unary_expression { $$ = $1 ^ $3;  }
 	;
 
 unary_expression
@@ -175,8 +171,7 @@ CONSTANT
 	: INTEGER { $$ = $1; }
 	| FLOAT	  { $$ = $1; }
 	| STRING  { $$ = $1; }
-	| TRUE	
-	| FALSE	
+	| BOOLEAN { $$ = $1; }
 	;
 
 %%
