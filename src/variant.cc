@@ -277,6 +277,7 @@ namespace variant
 									 {
 										// TODO: after boolean types are implemented think what to do with integrals and floating poin
 										// (julia does not cast them to bool implicitly)
+										return *this;
 									 },
 									 [&](auto val) -> operable
 									 {

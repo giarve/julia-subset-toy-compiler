@@ -58,6 +58,16 @@ namespace variant
 		operable operator+();
 		operable operator-();
 		operable operator!();
+
+		friend bool operator==(const operable& lhs, const operable& rhs){ return lhs.value == rhs.value; }
+		friend bool operator!=(const operable& lhs, const operable& rhs){ return lhs.value != rhs.value; }
+		friend bool operator< (const operable& lhs, const operable& rhs){ return lhs.value <  rhs.value; }
+		friend bool operator> (const operable& lhs, const operable& rhs){ return lhs.value >  rhs.value; }
+		friend bool operator<=(const operable& lhs, const operable& rhs){ return lhs.value <= rhs.value; }
+		friend bool operator>=(const operable& lhs, const operable& rhs){ return lhs.value >= rhs.value; }
+
+		friend bool operator&&(const operable& lhs, const operable& rhs){ return false; }
+		friend bool operator||(const operable& lhs, const operable& rhs){ return false; }
 	};
 
 	class array
