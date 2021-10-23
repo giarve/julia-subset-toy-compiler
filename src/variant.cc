@@ -149,7 +149,7 @@ namespace variant
 													   },
 													   [&](std::string rhs_arg) -> operable_variant_t
 													   {
-														  throw std::runtime_error("cannot divide string '" + stringify_operable_variant(lhs_arg) + "' with: " + rhs_arg);
+														   throw std::runtime_error("cannot divide " + stringify_operable_variant(lhs_arg) + " with string: " + rhs_arg);
 													   },
 												   },
 												   rhs.value);
@@ -167,7 +167,7 @@ namespace variant
 								 return std::visit(overloaded{
 													   [&](auto rhs_arg) -> operable_variant_t
 													   {
-														  throw std::runtime_error("cannot modulus integer '" + stringify_operable_variant(lhs_arg) + "' with non-integer: " + stringify_operable_variant(rhs_arg));
+														  throw std::runtime_error("cannot modulus integer " + stringify_operable_variant(lhs_arg) + " with non-integer: " + stringify_operable_variant(rhs_arg));
 													   },
 													   [&](int rhs_arg) -> operable_variant_t
 													   {
@@ -181,11 +181,11 @@ namespace variant
 								 return std::visit(overloaded{
 													   [&](auto rhs_arg) -> operable_variant_t
 													   {
-														  throw std::runtime_error("cannot modulus non-integers '" + stringify_operable_variant(lhs_arg) + "' with: " + stringify_operable_variant(rhs_arg));
+														  throw std::runtime_error("cannot modulus non-integers " + stringify_operable_variant(lhs_arg) + " with: " + stringify_operable_variant(rhs_arg));
 													   },
 													   [&](int rhs_arg) -> operable_variant_t
 													   {
-														  throw std::runtime_error("cannot modulus non-integer '" + stringify_operable_variant(lhs_arg) + "' with integer: " + stringify_operable_variant(rhs_arg));
+														  throw std::runtime_error("cannot modulus non-integer " + stringify_operable_variant(lhs_arg) + " with integer: " + stringify_operable_variant(rhs_arg));
 													   },
 												   },
 												   rhs.value);
@@ -201,7 +201,7 @@ namespace variant
 										return std::visit(overloaded{
 															  [&](auto rhs_arg) -> operable_variant_t
 															  {
-																 throw std::runtime_error("cannot exponentiate integer '" + stringify_operable_variant(lhs_arg) + "' with: " + stringify_operable_variant(rhs_arg));
+																 throw std::runtime_error("cannot exponentiate integer " + stringify_operable_variant(lhs_arg) + " with: " + stringify_operable_variant(rhs_arg));
 															  },
 															  [&](integral_or_floating_point auto rhs_arg) -> operable_variant_t
 															  {
@@ -214,7 +214,7 @@ namespace variant
 									{
 										return std::visit(overloaded{[&](auto rhs_arg) -> operable_variant_t
 																	 {
-																		throw std::runtime_error("cannot exponentiate string '" + stringify_operable_variant(lhs_arg) + "' with: " + stringify_operable_variant(rhs_arg));
+																		  throw std::runtime_error("cannot exponentiate string '" + lhs_arg + "' with: " + stringify_operable_variant(rhs_arg));
 																	 },
 																	 [&](int rhs_arg) -> operable_variant_t
 																	 {
@@ -225,7 +225,7 @@ namespace variant
 																	 },
 																	 [&](std::floating_point auto rhs_arg) -> operable_variant_t
 																	 {
-																		throw std::runtime_error("cannot exponentiate string '" + stringify_operable_variant(lhs_arg) + "' with floating point: " + stringify_operable_variant(rhs_arg));
+																		  throw std::runtime_error("cannot exponentiate string '" + lhs_arg + "' with floating point: " + stringify_operable_variant(rhs_arg));
 																	 }
 
 														  },
@@ -235,7 +235,7 @@ namespace variant
 									{
 										return std::visit(overloaded{[&](auto rhs_arg) -> operable_variant_t
 																	 {
-																		throw std::runtime_error("cannot exponentiate '" + stringify_operable_variant(lhs_arg) + "' with: " + stringify_operable_variant(rhs_arg));
+																		throw std::runtime_error("cannot exponentiate " + stringify_operable_variant(lhs_arg) + " with: " + stringify_operable_variant(rhs_arg));
 																	 }},
 														  rhs.value);
 									}},
@@ -293,7 +293,7 @@ namespace variant
 										 return std::visit(overloaded{
 															   [&](auto rhs_arg) -> bool
 															   {
-																  throw std::runtime_error("invalid boolean operation: '" + stringify_operable_variant(lhs_arg) + "' && " + stringify_operable_variant(rhs_arg));
+																  throw std::runtime_error("invalid boolean operation: " + stringify_operable_variant(lhs_arg) + " && " + stringify_operable_variant(rhs_arg));
 															   },
 															   [&](bool rhs_arg) -> bool
 															   {
@@ -306,7 +306,7 @@ namespace variant
 									 {
 										 return std::visit(overloaded{[&](auto rhs_arg) -> bool
 																	  {
-																		 throw std::runtime_error("invalid boolean operation: '" + stringify_operable_variant(lhs_arg) + "' && " + stringify_operable_variant(rhs_arg));
+																		 throw std::runtime_error("invalid boolean operation: " + stringify_operable_variant(lhs_arg) + " && " + stringify_operable_variant(rhs_arg));
 																	  }},
 														   rhs.value);
 									 }},
@@ -320,7 +320,7 @@ namespace variant
 										 return std::visit(overloaded{
 															   [&](auto rhs_arg) -> bool
 															   {
-																  throw std::runtime_error("invalid boolean operation: '" + stringify_operable_variant(lhs_arg) + "' || " + stringify_operable_variant(rhs_arg));
+																  throw std::runtime_error("invalid boolean operation: " + stringify_operable_variant(lhs_arg) + " || " + stringify_operable_variant(rhs_arg));
 															   },
 															   [&](bool rhs_arg) -> bool
 															   {
@@ -333,7 +333,7 @@ namespace variant
 									 {
 										 return std::visit(overloaded{[&](auto rhs_arg) -> bool
 																	  {
-																		 throw std::runtime_error("invalid boolean operation: '" + stringify_operable_variant(lhs_arg) + "' || " + stringify_operable_variant(rhs_arg));
+																		 throw std::runtime_error("invalid boolean operation: " + stringify_operable_variant(lhs_arg) + " || " + stringify_operable_variant(rhs_arg));
 																	  }},
 														   rhs.value);
 									 }},
