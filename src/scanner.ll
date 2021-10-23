@@ -27,6 +27,7 @@ INTEGER {DIGIT}+
 FLOAT {INTEGER}\.{INTEGER}
 NEWLINE \n
 BLANK [ \t\r]
+STRING \"([^\\\"]|\\.)*\"
 
 %{
   // Code run each time a pattern is matched.
@@ -84,7 +85,7 @@ BLANK [ \t\r]
 {NEWLINE}+    { loc.lines (yyleng); loc.step(); return yy::parser::make_NEWLINE(loc); }
 {FLOAT}       return make_FLOAT(yytext, loc);
 {INTEGER}     return make_INTEGER(yytext, loc);
-\".*\"        return make_STRING(yytext, loc);
+{STRING}      return make_STRING(yytext, loc);
 {IDENTIFIER}  return make_IDENTIFIER(yytext, loc);
 
 .             throw yy::parser::syntax_error(loc, "Scanner - Invalid char: " + std::string(yytext));
@@ -117,7 +118,9 @@ yy::parser::symbol_type make_IDENTIFIER(const std::string &s, const yy::parser::
 
 yy::parser::symbol_type make_STRING(const std::string &s, const yy::parser::location_type &loc)
 {
-    return yy::parser::make_STRING(s, loc);
+    // We remove quotes from the start and end
+    std::string without_quotes = std::string(s.begin() + 1, s.end()-1);
+    return yy::parser::make_STRING(without_quotes, loc);
 }
 
 

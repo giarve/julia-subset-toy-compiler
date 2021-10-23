@@ -39,56 +39,17 @@ namespace variant
 			return *this;
 		}
 
-		friend operable operator*(operable lhs,
-								  const operable &rhs)
-		{
-
-			lhs = std::visit(overloaded{
-
-								 [&](std::string lhs_arg) -> operable_variant_t
-								 {
-									 return std::visit(overloaded{
-														   [&](auto rhs_arg) -> operable_variant_t
-														   {
-															   throw std::runtime_error("cannot multiply string " + lhs_arg + " with: " + stringify_operable_variant(rhs_arg));
-														   },
-														   [&](std::string rhs_arg) -> operable_variant_t
-														   {
-															   return lhs_arg + rhs_arg;
-														   },
-													   },
-													   rhs.value);
-								 },
-								 [&](auto lhs_arg) -> operable_variant_t
-								 {
-									 return std::visit(overloaded{
-														   [&](auto rhs_arg) -> operable_variant_t
-														   {
-															   return lhs_arg * rhs_arg;
-														   },
-														   [&](std::string rhs_arg) -> operable_variant_t
-														   {
-															   throw std::runtime_error("cannot multiply string " + rhs_arg + " with: " + stringify_operable_variant(lhs_arg));
-														   },
-													   },
-													   rhs.value);
-								 }},
-							 lhs.value);
-			return lhs;
-		}
-
 		friend std::ostream &operator<<(std::ostream &stream, const operable &op)
 		{
-			std::visit([&](const auto &p)
-					   {
-						   std::ostringstream v;
-						   v << p;
-						   std::string s_param(v.str());
-						   stream << s_param;
-					   },
-					   op.value);
+			stream << stringify_operable_variant(op.value);
 			return stream;
 		}
+
+		friend operable operator+(operable lhs, const operable &rhs);
+		friend operable operator-(operable lhs, const operable &rhs);
+		friend operable operator*(operable lhs, const operable &rhs);
+		friend operable operator/(operable lhs, const operable &rhs);
+		friend operable operator%(operable lhs, const operable &rhs);
 	};
 
 	class array

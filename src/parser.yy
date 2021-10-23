@@ -119,8 +119,8 @@ relational_expression
 
 additive_expression
 	: exponentiative_expression { $$ = $1;  }
-	| additive_expression PLUS exponentiative_expression
-	| additive_expression MINUS exponentiative_expression
+	| additive_expression PLUS exponentiative_expression { $$ = $1 + $3;  }
+	| additive_expression MINUS exponentiative_expression { $$ = $1 - $3;  }
 	;
 
 exponentiative_expression
@@ -131,8 +131,8 @@ exponentiative_expression
 multiplicative_expression
 	: unary_expression
 	| multiplicative_expression STAR unary_expression 		{ $$ = $1 * $3;  }
-	| multiplicative_expression SLASH unary_expression		{ $$ = $1;  }
-	| multiplicative_expression PERCENT unary_expression	{ $$ = $1;  }
+	| multiplicative_expression SLASH unary_expression		{ $$ = $1 / $3;  }
+	| multiplicative_expression PERCENT unary_expression	{ $$ = $1 % $3;  }
 	;
 
 UNARY_OPERATOR
@@ -144,7 +144,6 @@ UNARY_OPERATOR
 unary_expression
 	: postfix_expression { $$ = $1;   }
 	| UNARY_OPERATOR postfix_expression { $$ = $2; }
-	// | FUNC_TRANSPOSE LPAREN IDENTIFIER RPAREN
 	;
 
 postfix_expression
@@ -152,11 +151,15 @@ postfix_expression
 	| postfix_expression LSQRBRKT arithmetic_boolean_expressions_sentence RSQRBRKT // index access
 	;
 
+// create a function expression?
+// | FUNC_TRANSPOSE LPAREN IDENTIFIER RPAREN
+
 primary_expression
 	: IDENTIFIER	{
 		if(!symtab.contains($1))
 			throw yy::parser::syntax_error(drv.location, "use of undeclared identifier: " + $1);
-
+		else
+			$$ = symtab[$1];
 		$$.identifier = $1;
 		}
 	| CONSTANT		{ $$ = $1;  }
