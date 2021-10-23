@@ -1,3 +1,4 @@
+#include <cmath>
 #include "variant.hh"
 
 namespace variant
@@ -189,6 +190,55 @@ namespace variant
 												   },
 												   rhs.value);
 							 }},
+						 lhs.value);
+		return lhs;
+	}
+
+	operable operator^(operable lhs, const operable &rhs)
+	{
+		lhs = std::visit(overloaded{[&](integral_or_floating_point auto lhs_arg) -> operable_variant_t
+									{
+										return std::visit(overloaded{
+															  [&](auto rhs_arg) -> operable_variant_t
+															  {
+																  throw std::runtime_error("cannot exponentiate integer '" + stringify_operable_variant(rhs_arg) + "' with: " + stringify_operable_variant(lhs_arg));
+															  },
+															  [&](integral_or_floating_point auto rhs_arg) -> operable_variant_t
+															  {
+																  return (float)std::pow(lhs_arg, rhs_arg);
+															  },
+														  },
+														  rhs.value);
+									},
+									[&](std::string lhs_arg) -> operable_variant_t
+									{
+										return std::visit(overloaded{[&](auto rhs_arg) -> operable_variant_t
+																	 {
+																		 throw std::runtime_error("cannot exponentiate string '" + stringify_operable_variant(rhs_arg) + "' with: " + stringify_operable_variant(lhs_arg));
+																	 },
+																	 [&](int rhs_arg) -> operable_variant_t
+																	 {
+																		 std::ostringstream os;
+																		 for (int i = 0; i < rhs_arg; i++)
+																			 os << lhs_arg;
+																		 return os.str();
+																	 },
+																	 [&](std::floating_point auto rhs_arg) -> operable_variant_t
+																	 {
+																		 throw std::runtime_error("cannot exponentiate string '" + stringify_operable_variant(rhs_arg) + "' with floating point: " + stringify_operable_variant(lhs_arg));
+																	 }
+
+														  },
+														  rhs.value);
+									},
+									[&](auto lhs_arg) -> operable_variant_t
+									{
+										return std::visit(overloaded{[&](auto rhs_arg) -> operable_variant_t
+																	 {
+																		 throw std::runtime_error("cannot exponentiate '" + stringify_operable_variant(rhs_arg) + "' with: " + stringify_operable_variant(lhs_arg));
+																	 }},
+														  rhs.value);
+									}},
 						 lhs.value);
 		return lhs;
 	}

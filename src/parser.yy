@@ -125,7 +125,7 @@ additive_expression
 
 exponentiative_expression
 	: multiplicative_expression { $$ = $1;  }
-	| exponentiative_expression CIRCUMFLEX multiplicative_expression
+	| exponentiative_expression CIRCUMFLEX multiplicative_expression { $$ = $1 ^ $3;  }
 	;
 
 multiplicative_expression
