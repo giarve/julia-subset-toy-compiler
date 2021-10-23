@@ -242,4 +242,46 @@ namespace variant
 						 lhs.value);
 		return lhs;
 	}
+
+	operable operable::operator+()
+	{
+		return std::visit(overloaded{[&](integral_or_floating_point auto val) -> operable
+									 {
+										 return *this; // + unary operator does nothing to arithmetic
+									 },
+									 [&](auto val) -> operable
+									 {
+										 throw std::runtime_error("invalid '+' unary expression for: " + stringify_operable_variant(val));
+									 }},
+						  this->value);
+	}
+
+	operable operable::operator-()
+	{
+		return std::visit(overloaded{[&](integral_or_floating_point auto val) -> operable
+									 {
+										 operable op;
+										 op.value = operable_variant_t(-val);
+										 return op;
+									 },
+									 [&](auto val) -> operable
+									 {
+										 throw std::runtime_error("invalid '-' unary expression for: " + stringify_operable_variant(val));
+									 }},
+						  this->value);
+	}
+
+	operable operable::operator!()
+	{
+		return std::visit(overloaded{[&](integral_or_floating_point auto val) -> operable
+									 {
+										// TODO: after boolean types are implemented think what to do with integrals and floating poin
+										// (julia does not cast them to bool implicitly)
+									 },
+									 [&](auto val) -> operable
+									 {
+										 throw std::runtime_error("invalid '!' unary expression for: " + stringify_operable_variant(val));
+									 }},
+						  this->value);
+	}
 }

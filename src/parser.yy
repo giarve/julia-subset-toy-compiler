@@ -135,15 +135,11 @@ multiplicative_expression
 	| multiplicative_expression PERCENT unary_expression	{ $$ = $1 % $3;  }
 	;
 
-UNARY_OPERATOR
-	: PLUS
-	| MINUS
-	| BANG
-	;
-
 unary_expression
 	: postfix_expression { $$ = $1;   }
-	| UNARY_OPERATOR postfix_expression { $$ = $2; }
+	| PLUS postfix_expression  { $$ = +$2; }
+	| MINUS postfix_expression { $$ = -$2; }
+	| BANG postfix_expression  { $$ = !$2; }
 	;
 
 postfix_expression

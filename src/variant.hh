@@ -54,6 +54,10 @@ namespace variant
 		friend operable operator/(operable lhs, const operable &rhs);
 		friend operable operator%(operable lhs, const operable &rhs);
 		friend operable operator^(operable lhs, const operable &rhs);
+
+		operable operator+();
+		operable operator-();
+		operable operator!();
 	};
 
 	class array
