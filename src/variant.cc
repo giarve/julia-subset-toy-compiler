@@ -418,13 +418,57 @@ namespace variant
 		const operable *scalar_equivalent_rhs = rhs.scalar_equivalent();
 
 		if (scalar_equivalent_lhs && scalar_equivalent_rhs)
+		{
 			return *scalar_equivalent_lhs * *scalar_equivalent_rhs;
+		}
+		else if (scalar_equivalent_lhs && !scalar_equivalent_rhs)
+		{
+			operable tmp = *scalar_equivalent_lhs;
+			lhs.values = rhs.values;
+			for (size_t i = 0; i < lhs.values.size(); i++)
+			{
+				for (size_t j = 0; j < lhs.values[i].size(); j++)
+				{
+					lhs.values[i][j] = tmp * rhs.values[i][j];
+				}
+			}
+			return lhs;
+		}
+		else if (!scalar_equivalent_lhs && scalar_equivalent_rhs)
+		{
+			for (size_t i = 0; i < lhs.values.size(); i++)
+			{
+				for (size_t j = 0; j < lhs.values[i].size(); j++)
+				{
+					lhs.values[i][j] = lhs.values[i][j] * *scalar_equivalent_rhs;
+				}
+			}
+			return lhs;
+		}
+		else if (operable_multiarray::mult_compatible(lhs, rhs))
+		{
+			size_t n_rows_lhs = lhs.values.size();
+			size_t n_rows_rhs = rhs.values.size();
+			size_t n_cols_rhs = rhs.values[0].size();
+
+			operable_multiarray result;
+			result.values.resize(n_rows_lhs);
+			for (auto &&col : result.values)
+				col.resize(n_cols_rhs);
+
+			for (size_t i = 0; i < n_rows_lhs; ++i)
+				for (size_t j = 0; j < n_cols_rhs; ++j)
+					for (size_t k = 0; k < n_rows_rhs; ++k)
+						result.values[i][j] = result.values[i][j] + lhs.values[i][k] * rhs.values[k][j];
+
+			return result;
+		}
 		else
 		{
 			std::ostringstream ss;
 			ss << "cannot operate: ";
 			ss << lhs;
-			ss << " ^ ";
+			ss << " * ";
 			ss << rhs;
 			throw std::runtime_error(ss.str());
 		}
@@ -443,7 +487,7 @@ namespace variant
 			std::ostringstream ss;
 			ss << "cannot operate: ";
 			ss << lhs;
-			ss << " ^ ";
+			ss << " / ";
 			ss << rhs;
 			throw std::runtime_error(ss.str());
 		}
@@ -460,7 +504,7 @@ namespace variant
 			std::ostringstream ss;
 			ss << "cannot operate: ";
 			ss << lhs;
-			ss << " ^ ";
+			ss << " % ";
 			ss << rhs;
 			throw std::runtime_error(ss.str());
 		}

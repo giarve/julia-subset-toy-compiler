@@ -9,10 +9,26 @@ b = true
 i / 2
 s * ", " * s
 
+# Arrays and vectors
+v_i = [10; 20; 30]
+v_r = [1.0; 2.0; 3.0]
+m_i = [1 2 3; 4 5 6]
+m_r = [1 2.2 3]
+A = [1.1 1.2; 2.1 2.2; 3.1 3.2]
+
+i + A[3, 2] / v_i[1]
+m_i[i - 8, m_i[1, 3]]
+-7 - (i + 7.0)
+
+v_i[2]
+m_r[1, 3]
+A[3, 1]
+
+
 m_i * (v_i - 5 * v_r)
 # 3 * ones(Int64, 2, 2)
-transpose(v_i) + m_r
-transpose(v_r) * v_r
+# transpose(v_i) + m_r
+# transpose(v_r) * v_r
 
 # Boolean expressions
 i == 10 && (i + 10) >= 20
@@ -51,21 +67,3 @@ Stacktrace:
 #= multi
 line
 comment #  =#
-
-# Arrays and vectors
-
-# TODO: Array access by index multiple dimensions
-
-#i + A[3, 2] / v_i[1]
-#m_i[i - 8, m_i[1, 3]]
--7 - (i + 7.0)
-
-v_i = [10; 20; 30]
-v_r = [1.0; 2.0; 3.0]
-m_i = [1 2 3; 4 5 6]
-m_r = [1 2.2 3]
-A = [1.1 1.2; 2.1 2.2; 3.1 3.2]
-
-v_i[2]
-#m_r[1, 3]
-#A[3, 1]

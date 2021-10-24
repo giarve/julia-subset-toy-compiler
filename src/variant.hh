@@ -123,6 +123,14 @@ namespace variant
 			return false;
 		}
 
+		static bool mult_compatible(const operable_multiarray &lhs, const operable_multiarray &rhs)
+		{
+			size_t n_cols_lhs = lhs.values[0].size();
+			size_t n_rows_rhs = rhs.values.size();
+
+			return n_cols_lhs == n_rows_rhs;
+		}
+
 		friend std::ostream &operator<<(std::ostream &stream, const operable_multiarray &opm);
 
 		friend operable_multiarray operator+(operable_multiarray lhs, const operable_multiarray &rhs);

@@ -53,6 +53,9 @@
 %nterm <variant::operable_multiarray> additive_expression primary_expression assignment_expression
 %nterm <variant::operable_multiarray> composite_element_list_initialization
 %nterm <variant::operable> CONSTANT
+%nterm <std::pair<int,int>> composite_element_list_access
+%nterm <int> arith_bool_expr_to_integer
+
 // %printer { yyo << $$; } <*>; // debugging print
 
 %%
@@ -140,7 +143,28 @@ unary_expression
 
 postfix_expression
 	: primary_expression { $$ = $1;  }
-	| postfix_expression LSQRBRKT arithmetic_boolean_expressions_sentence RSQRBRKT // TODO: index access
+	| postfix_expression LSQRBRKT composite_element_list_access RSQRBRKT {
+		// Index access
+		$$ = $1.values.at($3.first).at($3.second);
+	}
+	;
+
+composite_element_list_access
+	// Substract 1 to each index because we use 0 index arrays internally
+	: arith_bool_expr_to_integer COMMA arith_bool_expr_to_integer { $$.first = $1-1; $$.second = $3-1; } // [x,y]
+	| arith_bool_expr_to_integer { $$.first = $1-1; } // [x]
+	;
+
+arith_bool_expr_to_integer
+	: arithmetic_boolean_expressions_sentence {
+		const variant::operable *scalar_equivalent = $1.scalar_equivalent();
+		try {
+			$$ = std::get<int>(scalar_equivalent->value);
+		}
+		catch (const std::bad_variant_access& ex) {
+			throw yy::parser::syntax_error(drv.location, ex.what());
+		}
+	}
 	;
 
 // create a function expression?

@@ -1,6 +1,6 @@
 CODE_DIR = src
 
-BISON = bison
+BISON = bison -Wcounterexamples
 CXX = g++ -std=c++20 -Wall -g -fmax-errors=2
 FLEX = flex
 BASE = minijuliac
@@ -25,8 +25,7 @@ variant.o: parser.hh
 scanner.o: parser.hh
 
 examples: $(BASE)
-	./$(BASE) example_minimal.jl example.out.txt
-	#./$(BASE) example.jl example.out.txt
+	./$(BASE) example.jl example.out.txt
 
 CLEANFILES =										\
   $(BASE) *.o										\
