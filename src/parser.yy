@@ -27,7 +27,7 @@
   #include "driver.hh"
   #include <unordered_map>
 
-  std::unordered_map<std::string, variant::operable> symtab;
+  std::unordered_map<std::string, variant::operable_multiarray> symtab;
 }
 
 
@@ -69,8 +69,8 @@ statement_list
 
 expression
 	: assignment_expression NEWLINE { 
-		//symtab[$1.identifier.value()] = $1;
-		//std::cout << $1.identifier.value() << " = " << $1 << std::endl;
+		symtab[$1.identifier.value()] = $1;
+		std::cout << $1.identifier.value() << " = " << $1 << std::endl;
 	}
 	| arithmetic_boolean_expressions_sentence NEWLINE {
 		std::cout << $1 << std::endl;
@@ -80,12 +80,11 @@ expression
 assignment_expression
 	: IDENTIFIER EQUALS_SIGN arithmetic_boolean_expressions_sentence
 		{ 
-			//$$.identifier = $1;
-			//$$.value = $3.value;
+			$$ = $3;
+			$$.identifier = $1;
 		}
 	;
 
-// IDENTIFIER_bool or separate, look for examples
 arithmetic_boolean_expressions_sentence 
 	: logical_or_expression { $$ = $1; }
 	;
@@ -149,13 +148,10 @@ postfix_expression
 
 primary_expression
 	: IDENTIFIER	{
-		/*
 		if(!symtab.contains($1))
 			throw yy::parser::syntax_error(drv.location, "use of undeclared identifier: " + $1);
 		else
 			$$ = symtab[$1];
-		$$.identifier = $1;
-		*/
 		}
 	| CONSTANT		{ $$.insert_row_element($1); }
 	| LPAREN arithmetic_boolean_expressions_sentence RPAREN { $$ = $2; }
