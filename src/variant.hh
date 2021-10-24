@@ -3,7 +3,7 @@
 
 #include <string>
 #include <sstream>
-#include <map>
+#include <vector>
 #include <variant>
 #include <optional>
 #include <concepts>
@@ -23,21 +23,16 @@ namespace variant
 	using operable_variant_t = std::variant<int, float, std::string, bool>;
 
 	std::string stringify_operable_variant(operable_variant_t v);
+
 	class operable
 	{
 	public:
 		operable_variant_t value;
-		std::optional<std::string> identifier;
 
-		operable()
+		operable() {} // Used by bison for %nterm
+		operable(operable_variant_t val)
 		{
-			// Empty constructor used by bison for nterm grammars
-		}
-
-		operable &operator=(operable_variant_t &&rhs)
-		{
-			value = rhs;
-			return *this;
+			value = val;
 		}
 
 		friend std::ostream &operator<<(std::ostream &stream, const operable &op)
@@ -69,10 +64,71 @@ namespace variant
 		friend bool operator||(const operable &lhs, const operable &rhs);
 	};
 
-	class array
+	class operable_multiarray
 	{
-	};
+	public:
+		std::optional<std::string> identifier;
 
+		std::vector<std::vector<operable>> values = {std::vector<operable>{}};
+
+		operable_multiarray() {} // Used by bison for nterm
+		operable_multiarray(operable scalar)
+		{
+			insert_row_element(scalar);
+		}
+
+		// Returns nullptr if not equivalent
+		operable const *scalar_equivalent() const
+		{
+			if (values.size() == 1 && values[0].size() == 1)
+				return &values[0][0];
+
+			return nullptr;
+		}
+
+		operable_multiarray &operator=(operable_variant_t &&rhs)
+		{
+			values[0].emplace_back(rhs);
+			return *this;
+		}
+
+		operable_multiarray &operator=(operable &&rhs)
+		{
+			// TODO: reset vector to only hold an scalar?
+			values[0].emplace_back(rhs);
+			return *this;
+		}
+
+		void insert_row_element(operable op)
+		{
+			values[values.size() - 1].emplace_back(op);
+		}
+
+		void add_new_row()
+		{
+			values.emplace_back();
+		}
+
+		friend std::ostream &operator<<(std::ostream &stream, const operable_multiarray &opm);
+
+		friend operable_multiarray operator+(operable_multiarray lhs, const operable_multiarray &rhs);
+		friend operable_multiarray operator-(operable_multiarray lhs, const operable_multiarray &rhs);
+		friend operable_multiarray operator*(operable_multiarray lhs, const operable_multiarray &rhs);
+		friend operable_multiarray operator/(operable_multiarray lhs, const operable_multiarray &rhs);
+		friend operable_multiarray operator%(operable_multiarray lhs, const operable_multiarray &rhs);
+		friend operable_multiarray operator^(operable_multiarray lhs, const operable_multiarray &rhs);
+		operable_multiarray operator+();
+		operable_multiarray operator-();
+		operable_multiarray operator!();
+		friend bool operator==(const operable_multiarray &lhs, const operable_multiarray &rhs);
+		friend bool operator!=(const operable_multiarray &lhs, const operable_multiarray &rhs);
+		friend bool operator<(const operable_multiarray &lhs, const operable_multiarray &rhs);
+		friend bool operator>(const operable_multiarray &lhs, const operable_multiarray &rhs);
+		friend bool operator<=(const operable_multiarray &lhs, const operable_multiarray &rhs);
+		friend bool operator>=(const operable_multiarray &lhs, const operable_multiarray &rhs);
+		friend bool operator&&(const operable_multiarray &lhs, const operable_multiarray &rhs);
+		friend bool operator||(const operable_multiarray &lhs, const operable_multiarray &rhs);
+	};
 }
 
 #endif // ! VARIANT_HH

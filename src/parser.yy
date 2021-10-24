@@ -47,12 +47,13 @@
 %token FUNC_TRANSPOSE
 %token NEWLINE
 
-%nterm <variant::operable> arithmetic_boolean_expressions_sentence
-%nterm <variant::operable> logical_or_expression logical_and_expression equality_expression relational_expression
-%nterm <variant::operable> exponentiative_expression multiplicative_expression unary_expression postfix_expression
-%nterm <variant::operable> additive_expression primary_expression assignment_expression CONSTANT
-
-%printer { yyo << $$; } <*>; // debugging print
+%nterm <variant::operable_multiarray> arithmetic_boolean_expressions_sentence
+%nterm <variant::operable_multiarray> logical_or_expression logical_and_expression equality_expression relational_expression
+%nterm <variant::operable_multiarray> exponentiative_expression multiplicative_expression unary_expression postfix_expression
+%nterm <variant::operable_multiarray> additive_expression primary_expression assignment_expression
+%nterm <variant::operable_multiarray> composite_element_list_initialization
+%nterm <variant::operable> CONSTANT
+// %printer { yyo << $$; } <*>; // debugging print
 
 %%
 %start program;
@@ -68,47 +69,45 @@ statement_list
 
 expression
 	: assignment_expression NEWLINE { 
-		symtab[$1.identifier.value()] = $1;
-		std::cout << $1.identifier.value() << " = " << $1 << std::endl;
+		//symtab[$1.identifier.value()] = $1;
+		//std::cout << $1.identifier.value() << " = " << $1 << std::endl;
 	}
 	| arithmetic_boolean_expressions_sentence NEWLINE{
 		std::cout << $1 << std::endl;
-	} 
-	// | boolean_expression
-	// | arithmetic_expression
+	}
 	;
 
 assignment_expression
 	: IDENTIFIER EQUALS_SIGN arithmetic_boolean_expressions_sentence
 		{ 
-			$$.identifier = $1;
-			$$.value = $3.value;
+			//$$.identifier = $1;
+			//$$.value = $3.value;
 		}
 	;
 
 // IDENTIFIER_bool or separate, look for examples
 arithmetic_boolean_expressions_sentence 
-	: logical_or_expression { $$ = $1;  }
+	: logical_or_expression { $$ = $1; }
 	;
 
 logical_or_expression
-	: logical_and_expression { $$ = $1;  }
+	: logical_and_expression { $$ = $1; }
 	| logical_or_expression OR logical_and_expression { $$ = $1 || $3; }
 	;
 
 logical_and_expression
-	: equality_expression { $$ = $1;  }
+	: equality_expression { $$ = $1; }
 	| logical_and_expression AND equality_expression	{ $$ = $1 && $3; }
 	;
 
 equality_expression
-	: relational_expression { $$ = $1;  }
+	: relational_expression { $$ = $1; }
 	| equality_expression DOUBLE_EQUAL relational_expression { $$ = $1 == $3; }
 	| equality_expression BANG_EQUAL relational_expression	 { $$ = $1 != $3; }
 	;
 
 relational_expression
-	: additive_expression { $$ = $1;  }
+	: additive_expression { $$ = $1; }
 	| relational_expression LOWER additive_expression			{ $$ = $1 < $3; }
 	| relational_expression LOWER_EQUAL additive_expression		{ $$ = $1 <= $3; }
 	| relational_expression GREATER additive_expression			{ $$ = $1 > $3; }
@@ -116,33 +115,33 @@ relational_expression
 	;
 
 additive_expression
-	: multiplicative_expression { $$ = $1;  }
-	| additive_expression PLUS multiplicative_expression { $$ = $1 + $3;  }
-	| additive_expression MINUS multiplicative_expression { $$ = $1 - $3;  }
+	: multiplicative_expression { $$ = $1; }
+	| additive_expression PLUS multiplicative_expression { $$ = $1 + $3; }
+	| additive_expression MINUS multiplicative_expression { $$ = $1 - $3; }
 	;
 
 multiplicative_expression
-	: exponentiative_expression { $$ = $1;  }
-	| multiplicative_expression STAR exponentiative_expression 		{ $$ = $1 * $3;  }
-	| multiplicative_expression SLASH exponentiative_expression		{ $$ = $1 / $3;  }
-	| multiplicative_expression PERCENT exponentiative_expression	{ $$ = $1 % $3;  }
+	: exponentiative_expression { $$ = $1; }
+	| multiplicative_expression STAR exponentiative_expression 		{ $$ = $1 * $3; }
+	| multiplicative_expression SLASH exponentiative_expression		{ $$ = $1 / $3; }
+	| multiplicative_expression PERCENT exponentiative_expression	{ $$ = $1 % $3; }
 	;
 
 exponentiative_expression
-	: unary_expression { $$ = $1;  }
-	| exponentiative_expression CIRCUMFLEX unary_expression { $$ = $1 ^ $3;  }
+	: unary_expression { $$ = $1; }
+	| exponentiative_expression CIRCUMFLEX unary_expression { $$ = $1 ^ $3; }
 	;
 
 unary_expression
-	: postfix_expression { $$ = $1;   }
+	: postfix_expression { $$ = $1;  }
 	| PLUS postfix_expression  { $$ = +$2; }
 	| MINUS postfix_expression { $$ = -$2; }
 	| BANG postfix_expression  { $$ = !$2; }
 	;
 
 postfix_expression
-	: primary_expression { $$ = $1;   }
-	| postfix_expression LSQRBRKT arithmetic_boolean_expressions_sentence RSQRBRKT // index access
+	: primary_expression { $$ = $1;  }
+	| postfix_expression LSQRBRKT arithmetic_boolean_expressions_sentence RSQRBRKT // TODO: index access
 	;
 
 // create a function expression?
@@ -150,28 +149,30 @@ postfix_expression
 
 primary_expression
 	: IDENTIFIER	{
+		/*
 		if(!symtab.contains($1))
 			throw yy::parser::syntax_error(drv.location, "use of undeclared identifier: " + $1);
 		else
 			$$ = symtab[$1];
 		$$.identifier = $1;
+		*/
 		}
-	| CONSTANT		{ $$ = $1;  }
+	| CONSTANT		{ $$.insert_row_element($1); }
 	| LPAREN arithmetic_boolean_expressions_sentence RPAREN { $$ = $2; }
-	| LSQRBRKT composite_element_list_initialization RSQRBRKT
+	| LSQRBRKT composite_element_list_initialization RSQRBRKT { $$ = $2; }
 	;
 
-composite_element_list_initialization  // array/vector
-	: composite_element_list_initialization CONSTANT
-	| composite_element_list_initialization SEMICOLON
-	| CONSTANT
+composite_element_list_initialization
+	: composite_element_list_initialization CONSTANT { $1.insert_row_element($2); $$ = $1; }
+	| composite_element_list_initialization SEMICOLON { $$ = $1; $$.add_new_row(); }
+	| CONSTANT { $$.insert_row_element($1); }
 	;
 
 CONSTANT
-	: INTEGER { $$ = $1; }
-	| FLOAT	  { $$ = $1; }
-	| STRING  { $$ = $1; }
-	| BOOLEAN { $$ = $1; }
+	: INTEGER { $$.value = $1; }
+	| FLOAT	  { $$.value = $1; }
+	| STRING  { $$.value = $1; }
+	| BOOLEAN { $$.value = $1; }
 	;
 
 %%
