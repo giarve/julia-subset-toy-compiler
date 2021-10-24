@@ -370,12 +370,118 @@ namespace variant
 		return stream;
 	}
 
-	operable_multiarray operator+(operable_multiarray lhs, const operable_multiarray &rhs) { return lhs; }
-	operable_multiarray operator-(operable_multiarray lhs, const operable_multiarray &rhs) { return lhs; }
-	operable_multiarray operator*(operable_multiarray lhs, const operable_multiarray &rhs) { return lhs; }
-	operable_multiarray operator/(operable_multiarray lhs, const operable_multiarray &rhs) { return lhs; }
-	operable_multiarray operator%(operable_multiarray lhs, const operable_multiarray &rhs) { return lhs; }
-	operable_multiarray operator^(operable_multiarray lhs, const operable_multiarray &rhs) { return lhs; }
+	operable_multiarray operator+(operable_multiarray lhs, const operable_multiarray &rhs)
+	{
+		if (operable_multiarray::dimension_mismatch(lhs, rhs))
+		{
+			std::ostringstream ss;
+			ss << "cannot operate due to dimension mismatch: ";
+			ss << lhs;
+			ss << " + ";
+			ss << rhs;
+			throw std::runtime_error(ss.str());
+		}
+
+		for (size_t i = 0; i < lhs.values.size(); i++)
+		{
+			for (size_t j = 0; j < lhs.values[i].size(); j++)
+			{
+				lhs.values[i][j] = lhs.values[i][j] + rhs.values[i][j];
+			}
+		}
+		return lhs;
+	}
+	operable_multiarray operator-(operable_multiarray lhs, const operable_multiarray &rhs)
+	{
+		if (operable_multiarray::dimension_mismatch(lhs, rhs))
+		{
+			std::ostringstream ss;
+			ss << "cannot operate due to dimension mismatch: ";
+			ss << lhs;
+			ss << " - ";
+			ss << rhs;
+			throw std::runtime_error(ss.str());
+		}
+
+		for (size_t i = 0; i < lhs.values.size(); i++)
+		{
+			for (size_t j = 0; j < lhs.values[i].size(); j++)
+			{
+				lhs.values[i][j] = lhs.values[i][j] - rhs.values[i][j];
+			}
+		}
+		return lhs;
+	}
+	operable_multiarray operator*(operable_multiarray lhs, const operable_multiarray &rhs)
+	{
+		const operable *scalar_equivalent_lhs = lhs.scalar_equivalent();
+		const operable *scalar_equivalent_rhs = rhs.scalar_equivalent();
+
+		if (scalar_equivalent_lhs && scalar_equivalent_rhs)
+			return *scalar_equivalent_lhs * *scalar_equivalent_rhs;
+		else
+		{
+			std::ostringstream ss;
+			ss << "cannot operate: ";
+			ss << lhs;
+			ss << " ^ ";
+			ss << rhs;
+			throw std::runtime_error(ss.str());
+		}
+
+		// TODO: Add Vector/Matrix multiplication here
+	}
+	operable_multiarray operator/(operable_multiarray lhs, const operable_multiarray &rhs)
+	{
+		const operable *scalar_equivalent_lhs = lhs.scalar_equivalent();
+		const operable *scalar_equivalent_rhs = rhs.scalar_equivalent();
+
+		if (scalar_equivalent_lhs && scalar_equivalent_rhs)
+			return *scalar_equivalent_lhs / *scalar_equivalent_rhs;
+		else
+		{
+			std::ostringstream ss;
+			ss << "cannot operate: ";
+			ss << lhs;
+			ss << " ^ ";
+			ss << rhs;
+			throw std::runtime_error(ss.str());
+		}
+	}
+	operable_multiarray operator%(operable_multiarray lhs, const operable_multiarray &rhs)
+	{
+		const operable *scalar_equivalent_lhs = lhs.scalar_equivalent();
+		const operable *scalar_equivalent_rhs = rhs.scalar_equivalent();
+
+		if (scalar_equivalent_lhs && scalar_equivalent_rhs)
+			return *scalar_equivalent_lhs % *scalar_equivalent_rhs;
+		else
+		{
+			std::ostringstream ss;
+			ss << "cannot operate: ";
+			ss << lhs;
+			ss << " ^ ";
+			ss << rhs;
+			throw std::runtime_error(ss.str());
+		}
+	}
+	operable_multiarray operator^(operable_multiarray lhs, const operable_multiarray &rhs)
+	{
+		const operable *scalar_equivalent_lhs = lhs.scalar_equivalent();
+		const operable *scalar_equivalent_rhs = rhs.scalar_equivalent();
+
+		if (scalar_equivalent_lhs && scalar_equivalent_rhs)
+			return *scalar_equivalent_lhs ^ *scalar_equivalent_rhs;
+		else
+		{
+			std::ostringstream ss;
+			ss << "cannot operate: ";
+			ss << lhs;
+			ss << " ^ ";
+			ss << rhs;
+			throw std::runtime_error(ss.str());
+		}
+	}
 
 	operable_multiarray operable_multiarray::operator+()
 	{
@@ -406,11 +512,13 @@ namespace variant
 
 	operable_multiarray operable_multiarray::operator!()
 	{
-		const operable *scalar_equivalent = this->scalar_equivalent();
-		if (scalar_equivalent)
+		// Broadcast
+		for (auto &&row : values)
 		{
-			operable scalar_equivalent_copy = *scalar_equivalent;
-			return !scalar_equivalent_copy;
+			for (auto &&col : row)
+			{
+				col = !col;
+			}
 		}
 
 		return *this;

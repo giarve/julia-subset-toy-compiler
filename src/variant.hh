@@ -109,6 +109,20 @@ namespace variant
 			values.emplace_back();
 		}
 
+		static bool dimension_mismatch(const operable_multiarray &lhs, const operable_multiarray &rhs)
+		{
+			if (lhs.values.size() != rhs.values.size())
+				return true;
+
+			for (size_t i = 0; i < lhs.values.size(); i++)
+			{
+				if (lhs.values[i].size() != rhs.values[i].size())
+					return true;
+			}
+
+			return false;
+		}
+
 		friend std::ostream &operator<<(std::ostream &stream, const operable_multiarray &opm);
 
 		friend operable_multiarray operator+(operable_multiarray lhs, const operable_multiarray &rhs);

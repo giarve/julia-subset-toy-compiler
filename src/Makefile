@@ -28,10 +28,6 @@ examples: $(BASE)
 	./$(BASE) example_minimal.jl example.out.txt
 	#./$(BASE) example.jl example.out.txt
 
-run: $(BASE)
-	@echo "Type an expression. Quit with ctrl-d."
-	./$< -
-
 CLEANFILES =										\
   $(BASE) *.o										\
   parser.hh parser.cc parser.output parser.xml parser.html location.hh	\

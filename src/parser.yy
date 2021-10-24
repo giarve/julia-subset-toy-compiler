@@ -72,7 +72,7 @@ expression
 		//symtab[$1.identifier.value()] = $1;
 		//std::cout << $1.identifier.value() << " = " << $1 << std::endl;
 	}
-	| arithmetic_boolean_expressions_sentence NEWLINE{
+	| arithmetic_boolean_expressions_sentence NEWLINE {
 		std::cout << $1 << std::endl;
 	}
 	;
