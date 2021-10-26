@@ -67,3 +67,9 @@ Stacktrace:
 #= multi
 line
 comment #  =#
+
+[1 2; 3 4]
+a = [1 2; 3 4]
+size = size(a)
+a
+size = size([1.4;2.3;3.2 4.1])

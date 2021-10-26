@@ -12,6 +12,7 @@
   #include <string>
 
   #include "variant.hh"
+  #include "builtin.hh"
   class driver;
 }
 
@@ -44,10 +45,10 @@
 %token DOUBLE_EQUAL BANG_EQUAL 
 %token GREATER LOWER GREATER_EQUAL LOWER_EQUAL
 %token RSQRBRKT LSQRBRKT
-%token FUNC_TRANSPOSE
 %token NEWLINE
+%token FUNC_DIV FUNC_LENGTH FUNC_SIZE FUNC_TRANSPOSE
 
-%nterm <variant::operable_multiarray> arithmetic_boolean_expressions_sentence
+%nterm <variant::operable_multiarray> arith_bool_exprs
 %nterm <variant::operable_multiarray> logical_or_expression logical_and_expression equality_expression relational_expression
 %nterm <variant::operable_multiarray> exponentiative_expression multiplicative_expression unary_expression postfix_expression
 %nterm <variant::operable_multiarray> additive_expression primary_expression assignment_expression
@@ -55,14 +56,18 @@
 %nterm <variant::operable> CONSTANT
 %nterm <std::pair<int,int>> composite_element_list_access
 %nterm <int> arith_bool_expr_to_integer
+%nterm <variant::operable_multiarray> function
 
 // %printer { yyo << $$; } <*>; // debugging print
 
 %%
 %start program;
 
+// QUICK FIX: Remove NEWLINE token in `program` grammar if the input reader appends a NEWLINE
+// at the end and removes newlines before the first statement
 program
-    : statement_list
+    : NEWLINE statement_list
+	| statement_list
     ;
 
 statement_list
@@ -75,20 +80,20 @@ expression
 		symtab[$1.identifier.value()] = $1;
 		std::cout << $1.identifier.value() << " = " << $1 << std::endl;
 	}
-	| arithmetic_boolean_expressions_sentence NEWLINE {
+	| arith_bool_exprs NEWLINE {
 		std::cout << $1 << std::endl;
 	}
 	;
 
 assignment_expression
-	: IDENTIFIER EQUALS_SIGN arithmetic_boolean_expressions_sentence
+	: IDENTIFIER EQUALS_SIGN arith_bool_exprs
 		{ 
 			$$ = $3;
 			$$.identifier = $1;
 		}
 	;
 
-arithmetic_boolean_expressions_sentence 
+arith_bool_exprs 
 	: logical_or_expression { $$ = $1; }
 	;
 
@@ -156,7 +161,7 @@ composite_element_list_access
 	;
 
 arith_bool_expr_to_integer
-	: arithmetic_boolean_expressions_sentence {
+	: arith_bool_exprs {
 		const variant::operable *scalar_equivalent = $1.scalar_equivalent();
 		try {
 			$$ = std::get<int>(scalar_equivalent->value);
@@ -167,9 +172,6 @@ arith_bool_expr_to_integer
 	}
 	;
 
-// create a function expression?
-// | FUNC_TRANSPOSE LPAREN IDENTIFIER RPAREN
-
 primary_expression
 	: IDENTIFIER	{
 		if(!symtab.contains($1))
@@ -178,14 +180,22 @@ primary_expression
 			$$ = symtab[$1];
 		}
 	| CONSTANT		{ $$.insert_row_element($1); }
-	| LPAREN arithmetic_boolean_expressions_sentence RPAREN { $$ = $2; }
+	| LPAREN arith_bool_exprs RPAREN { $$ = $2; }
 	| LSQRBRKT composite_element_list_initialization RSQRBRKT { $$ = $2; }
+	| function { $$ = $1; }
 	;
 
 composite_element_list_initialization
 	: composite_element_list_initialization CONSTANT { $1.insert_row_element($2); $$ = $1; }
 	| composite_element_list_initialization SEMICOLON { $$ = $1; $$.add_new_row(); }
 	| CONSTANT { $$.insert_row_element($1); }
+	;
+
+function
+	: FUNC_DIV 		 arith_bool_exprs COMMA arith_bool_exprs RPAREN { $$ = builtin::div($2, $4); }
+	| FUNC_LENGTH	 arith_bool_exprs RPAREN { $$ = builtin::length($2); }
+	| FUNC_SIZE		 arith_bool_exprs RPAREN { $$ = builtin::size($2); }
+	| FUNC_TRANSPOSE arith_bool_exprs RPAREN { $$ = builtin::transpose($2); }
 	;
 
 CONSTANT

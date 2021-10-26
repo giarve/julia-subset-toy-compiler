@@ -42,6 +42,8 @@ STRING \"([^\\\"]|\\.)*\"
   loc.step ();
 %}
 
+{NEWLINE}+    { loc.lines (yyleng); loc.step(); return yy::parser::make_NEWLINE(loc); }
+
 {BLANK}+  loc.step ();
 
 "#"                            BEGIN(COMMENT_SINGLELINE);
@@ -81,9 +83,11 @@ STRING \"([^\\\"]|\\.)*\"
 "||"          return yy::parser::make_OR    (loc);
 "!"           return yy::parser::make_BANG  (loc);
 
-"transpose"   return yy::parser::make_FUNC_TRANSPOSE (loc);
+"transpose("   return yy::parser::make_FUNC_TRANSPOSE (loc);
+"div("         return yy::parser::make_FUNC_DIV (loc);
+"length("      return yy::parser::make_FUNC_LENGTH (loc);
+"size("        return yy::parser::make_FUNC_SIZE (loc);
 
-{NEWLINE}+    { loc.lines (yyleng); loc.step(); return yy::parser::make_NEWLINE(loc); }
 {FLOAT}       return make_FLOAT(yytext, loc);
 {INTEGER}     return make_INTEGER(yytext, loc);
 {STRING}      return make_STRING(yytext, loc);

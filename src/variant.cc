@@ -10,7 +10,7 @@ namespace variant
 		return std::visit([](auto arg) -> std::string
 						  {
 							  std::stringstream ss;
-							  ss << std::boolalpha << arg;
+							  ss << std::boolalpha << std::showpoint << arg;
 							  return ss.str();
 						  },
 						  v);
@@ -472,9 +472,8 @@ namespace variant
 			ss << rhs;
 			throw std::runtime_error(ss.str());
 		}
-
-		// TODO: Add Vector/Matrix multiplication here
 	}
+
 	operable_multiarray operator/(operable_multiarray lhs, const operable_multiarray &rhs)
 	{
 		const operable *scalar_equivalent_lhs = lhs.scalar_equivalent();
