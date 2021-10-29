@@ -17,6 +17,7 @@
   yy::parser::symbol_type make_IDENTIFIER (const std::string &s, const yy::parser::location_type& loc);
   yy::parser::symbol_type make_STRING (const std::string &s, const yy::parser::location_type& loc);
   yy::parser::symbol_type make_BOOLEAN (const std::string &s, const yy::parser::location_type& loc);
+  yy::parser::symbol_type make_TYPE (const std::string &s, const yy::parser::location_type& loc);
 %}
 
 %x COMMENT_MULTILINE
@@ -87,6 +88,14 @@ STRING \"([^\\\"]|\\.)*\"
 "div("         return yy::parser::make_FUNC_DIV (loc);
 "length("      return yy::parser::make_FUNC_LENGTH (loc);
 "size("        return yy::parser::make_FUNC_SIZE (loc);
+"ones("        return yy::parser::make_FUNC_ONES (loc);
+"zeros("        return yy::parser::make_FUNC_ZEROS (loc);
+
+"Int64"        return make_TYPE (yytext, loc);
+"Float64"      return make_TYPE (yytext, loc);
+"String"       return make_TYPE (yytext, loc);
+"Bool"         return make_TYPE (yytext, loc);
+
 
 {FLOAT}       return make_FLOAT(yytext, loc);
 {INTEGER}     return make_INTEGER(yytext, loc);
@@ -134,6 +143,18 @@ yy::parser::symbol_type make_BOOLEAN(const std::string &s, const yy::parser::loc
     return yy::parser::make_BOOLEAN(b, loc);
 }
 
+yy::parser::symbol_type make_TYPE(const std::string &s, const yy::parser::location_type &loc)
+{
+    if(s == "Int64")
+        return yy::parser::make_TYPE(variant::JuliaType::Int64, loc);
+    else if(s == "Float64")
+        return yy::parser::make_TYPE(variant::JuliaType::Float64, loc);
+    else if(s == "String")
+        return yy::parser::make_TYPE(variant::JuliaType::String, loc);
+    else
+        return yy::parser::make_TYPE(variant::JuliaType::Bool, loc);
+}
+
 void driver::scan_begin()
 {
     yy_flex_debug = trace_scanning;
@@ -148,7 +169,7 @@ void driver::scan_begin()
 
     if (path_file_out.empty() || path_file_out == "-")
         yyout = stdout;
-    else if (!(yyout = fopen(path_file_out.c_str(), "w")))
+    else if (!(stdout = fopen(path_file_out.c_str(), "w")))
     {
         std::cerr << "cannot open " << path_file_out << ": " << strerror(errno) << '\n';
         exit(EXIT_FAILURE);

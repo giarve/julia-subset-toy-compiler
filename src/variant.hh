@@ -19,6 +19,12 @@ concept integral_or_floating_point = std::integral<T> || std::floating_point<T>;
 
 namespace variant
 {
+	enum JuliaType {
+		Int64,
+		Float64,
+		String,
+		Bool	
+	};
 
 	using operable_variant_t = std::variant<int, float, std::string, bool>;
 

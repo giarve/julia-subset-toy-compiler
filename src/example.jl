@@ -24,11 +24,10 @@ v_i[2]
 m_r[1, 3]
 A[3, 1]
 
-
 m_i * (v_i - 5 * v_r)
-# 3 * ones(Int64, 2, 2)
-# transpose(v_i) + m_r
-# transpose(v_r) * v_r
+3 * ones(Int64, 2, 2)
+transpose(v_i) + m_r
+transpose(v_r) * v_r
 
 # Boolean expressions
 i == 10 && (i + 10) >= 20
@@ -41,8 +40,7 @@ b || !b && b && !b
 # Sentences: the combination of any of the above
 id = b || !b && b
 # && !(5 + i * 5^3)
-
-#=
+#= ^^^^^
 Julia has short-circuit evaluation, but we dont
 
 julia> b = true
@@ -70,6 +68,13 @@ comment #  =#
 
 [1 2; 3 4]
 a = [1 2; 3 4]
-size = size(a)
-a
-size = size([1.4;2.3;3.2 4.1])
+sizea = size(a)
+ones(Int64, 1, 4)
+ones(Bool, 2, 4)
+zeros(Float64, 2,2)
+
+division = div(3,2)
+
+transpose([1;2])
+transpose([4 5 1])
+

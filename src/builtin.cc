@@ -2,19 +2,48 @@
 
 namespace builtin
 {
-    variant::operable_multiarray div(const variant::operable_multiarray &lhs, const variant::operable_multiarray &rhs)
+    int div(const int lhs, const int rhs)
     {
-        return lhs;
+        return lhs / rhs;
     }
 
     variant::operable_multiarray size(const variant::operable_multiarray &op)
     {
         variant::operable_multiarray new_op;
-        new_op.values = op.values;
+        new_op.values[0].resize(2);
+        new_op.values[0][0] = variant::operable((int)op.values.size());
+        new_op.values[0][1] = variant::operable((int)op.values[0].size());
 
-        for (auto &&new_row : new_op.values)
-            for (auto &&new_col : new_row)
-                new_col = std::holds_alternative<int>(new_col.value) ? variant::operable(0) : variant::operable(0.f);
+        return new_op;
+    }
+
+    variant::operable_multiarray fill_with(variant::JuliaType withType, int with, int n_rows, int n_columns)
+    {
+        auto to_fill_with = [&]()
+        {
+            switch (withType)
+            {
+            case variant::JuliaType::Int64:
+                return variant::operable(with);
+                break;
+            case variant::JuliaType::Float64:
+                return variant::operable((float)with);
+                break;
+            case variant::JuliaType::String:
+                return variant::operable("");
+                break;
+            case variant::JuliaType::Bool:
+                return variant::operable((bool)with);
+                break;
+            }
+
+            return variant::operable();
+        };
+
+        variant::operable_multiarray new_op;
+        new_op.values.resize(n_rows);
+        for (auto &&col : new_op.values)
+            col.resize(n_columns, to_fill_with());
 
         return new_op;
     }
@@ -46,6 +75,20 @@ namespace builtin
 
     variant::operable_multiarray transpose(const variant::operable_multiarray &op)
     {
-        return op;
+        variant::operable_multiarray new_op;
+
+        size_t n_rows = op.values.size();
+        size_t n_cols = op.values[0].size();
+
+        new_op.values.resize(n_cols);
+        for (auto &&cols : new_op.values)
+            cols.resize(n_rows);
+
+        for (size_t i = 0; i < n_rows; i++)
+            for (size_t j = 0; j < n_cols; j++)
+                new_op.values[j][i] = op.values[i][j];
+
+        return new_op;
     }
+
 }

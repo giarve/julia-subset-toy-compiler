@@ -39,6 +39,7 @@
 %token <std::string> STRING 
 %token <std::string> IDENTIFIER
 %token <bool> BOOLEAN
+%token <variant::JuliaType> TYPE
 %token EQUALS_SIGN STAR PLUS MINUS
 %token LPAREN RPAREN PERCENT CIRCUMFLEX SLASH SEMICOLON COMMA
 %token AND OR BANG
@@ -46,7 +47,7 @@
 %token GREATER LOWER GREATER_EQUAL LOWER_EQUAL
 %token RSQRBRKT LSQRBRKT
 %token NEWLINE
-%token FUNC_DIV FUNC_LENGTH FUNC_SIZE FUNC_TRANSPOSE
+%token FUNC_DIV FUNC_LENGTH FUNC_SIZE FUNC_TRANSPOSE FUNC_ONES FUNC_ZEROS
 
 %nterm <variant::operable_multiarray> arith_bool_exprs
 %nterm <variant::operable_multiarray> logical_or_expression logical_and_expression equality_expression relational_expression
@@ -192,10 +193,12 @@ composite_element_list_initialization
 	;
 
 function
-	: FUNC_DIV 		 arith_bool_exprs COMMA arith_bool_exprs RPAREN { $$ = builtin::div($2, $4); }
+	: FUNC_DIV 		 arith_bool_expr_to_integer COMMA arith_bool_expr_to_integer RPAREN { $$ = builtin::div($2, $4); }
 	| FUNC_LENGTH	 arith_bool_exprs RPAREN { $$ = builtin::length($2); }
 	| FUNC_SIZE		 arith_bool_exprs RPAREN { $$ = builtin::size($2); }
 	| FUNC_TRANSPOSE arith_bool_exprs RPAREN { $$ = builtin::transpose($2); }
+	| FUNC_ONES TYPE COMMA arith_bool_expr_to_integer COMMA arith_bool_expr_to_integer RPAREN  { $$ = builtin::fill_with($2, 1, $4, $6); }
+	| FUNC_ZEROS TYPE COMMA arith_bool_expr_to_integer COMMA arith_bool_expr_to_integer RPAREN { $$ = builtin::fill_with($2, 0, $4, $6); }	
 	;
 
 CONSTANT
@@ -209,5 +212,5 @@ CONSTANT
 
 void yy::parser::error (const location_type& l, const std::string& m)
 {
-  std::cerr << l << ": " << m << '\n';
+  std::cerr << "Syntax error at " << l << ": " << m << '\n';
 }
