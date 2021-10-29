@@ -20,7 +20,7 @@ concept integral_or_floating_point = std::integral<T> || std::floating_point<T>;
 namespace variant
 {
 	enum JuliaType {
-		Int64,
+		Int32,
 		Float64,
 		String,
 		Bool	

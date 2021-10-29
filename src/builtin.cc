@@ -23,7 +23,7 @@ namespace builtin
         {
             switch (withType)
             {
-            case variant::JuliaType::Int64:
+            case variant::JuliaType::Int32:
                 return variant::operable(with);
                 break;
             case variant::JuliaType::Float64:

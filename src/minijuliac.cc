@@ -13,6 +13,12 @@ int main(int argc, char *argv[])
     driver drv;
     drv.trace_parsing = false;
     drv.trace_scanning = false;
+
+    if(argv[3])
+    {
+        drv.trace_parsing = true;
+        drv.trace_scanning = true;
+    }
     
     if(drv.parse(argv[1], argv[2]) != 0)
         std::cout << "Error code: " << drv.result << std::endl;

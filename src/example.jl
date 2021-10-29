@@ -26,7 +26,7 @@ m_r[1, 3]
 A[3, 1]
 
 m_i * (v_i - 5 * v_r)
-3 * ones(Int64, 2, 2)
+3 * ones(Int32, 2, 2)
 transpose(v_i) + m_r
 transpose(v_r) * v_r
 
@@ -51,7 +51,7 @@ julia> id = b || !b && b && !(5 + i * 5^3)
 true
 
 julia> id = !(5 + i * 5^3)
-ERROR: MethodError: no method matching !(::Int64)
+ERROR: MethodError: no method matching !(::Int32)
 Closest candidates are:
   !(::Bool) at bool.jl:33
   !(::Function) at operators.jl:968
@@ -71,7 +71,7 @@ comment #  =#
 a = [1 2; 3 4]
 sizea = size(a)
 len = length(a)
-ones(Int64, 1, 4)
+ones(Int32, 1, 4)
 ones(Bool, 2, 4)
 zeros(Float64, 2,2)
 
@@ -79,3 +79,12 @@ division = div(3,2)
 
 transpose([1;2])
 transpose([4 5 1])
+
+0.5
+.5
+00.5
+0.6
+.55
+0.7
+0.3e+12
+0.4e-12
