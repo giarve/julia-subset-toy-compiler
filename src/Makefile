@@ -16,7 +16,7 @@ all: $(BASE)
 %.o: %.cc
 	$(CXX) -c -o$@ $<
 
-$(BASE): $(BASE).o driver.o parser.o scanner.o variant.o builtin.o
+$(BASE): $(BASE).o driver.o parser.o scanner.o variant.o builtin.o customlog.o
 	$(CXX) -o $@ $^
 
 $(BASE).o: parser.hh
@@ -24,6 +24,7 @@ parser.o: parser.hh
 variant.o: parser.hh
 scanner.o: parser.hh
 builtin.o: parser.hh
+customlog.o: parser.hh
 
 examples: $(BASE)
 	./$(BASE) example.jl example.out.txt

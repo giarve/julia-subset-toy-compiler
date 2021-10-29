@@ -79,10 +79,14 @@ statement_list
 expression
 	: assignment_expression NEWLINE { 
 		symtab[$1.identifier.value()] = $1;
-		std::cout << $1.identifier.value() << " = " << $1 << std::endl;
+		std::ostringstream ss;
+		ss << $1.identifier.value() << " = " << $1 << std::endl;
+		drv.output->cout(ss.str());
 	}
 	| arith_bool_exprs NEWLINE {
-		std::cout << $1 << std::endl;
+		std::ostringstream ss;
+		ss << $1 << std::endl;
+		drv.output->cout(ss.str());
 	}
 	;
 
@@ -212,5 +216,7 @@ CONSTANT
 
 void yy::parser::error (const location_type& l, const std::string& m)
 {
-  std::cerr << "Syntax error at " << l << ": " << m << '\n';
+   std::ostringstream ss;
+   ss << l; ss << ": "; ss << m; ss << std::endl;
+   drv.output->cout(ss.str());
 }

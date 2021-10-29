@@ -8,6 +8,7 @@ b = true
 5 + i * 5^3
 i / 2
 s * ", " * s
+5 % 4
 
 # Arrays and vectors
 v_i = [10; 20; 30]
@@ -69,6 +70,7 @@ comment #  =#
 [1 2; 3 4]
 a = [1 2; 3 4]
 sizea = size(a)
+len = length(a)
 ones(Int64, 1, 4)
 ones(Bool, 2, 4)
 zeros(Float64, 2,2)
@@ -77,4 +79,3 @@ division = div(3,2)
 
 transpose([1;2])
 transpose([4 5 1])
-

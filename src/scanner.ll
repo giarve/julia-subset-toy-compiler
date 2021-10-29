@@ -163,15 +163,7 @@ void driver::scan_begin()
         yyin = stdin;
     else if (!(yyin = fopen(path_file_in.c_str(), "r")))
     {
-        std::cerr << "cannot open " << path_file_in << ": " << strerror(errno) << '\n';
-        exit(EXIT_FAILURE);
-    }
-
-    if (path_file_out.empty() || path_file_out == "-")
-        yyout = stdout;
-    else if (!(stdout = fopen(path_file_out.c_str(), "w")))
-    {
-        std::cerr << "cannot open " << path_file_out << ": " << strerror(errno) << '\n';
+       // *tee << "cannot open " << path_file_in << ": " << strerror(errno) << '\n';
         exit(EXIT_FAILURE);
     }
 }
@@ -179,5 +171,4 @@ void driver::scan_begin()
 void driver::scan_end()
 {
     fclose(yyin);
-    fclose(yyout);
 }

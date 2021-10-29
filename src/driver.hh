@@ -1,8 +1,10 @@
 #ifndef DRIVER_HH
 #define DRIVER_HH
+
 #include <string>
 #include <map>
 
+#include "customlog.hh"
 #include "parser.hh"
 
 // Give Flex the prototype of yylex we want ...
@@ -26,11 +28,12 @@ public:
 
    // The name of the file being parsed.
   std::string path_file_in; 
-
   std::string path_file_out;
 
   // Whether to generate parser debug traces.
   bool trace_parsing;
+
+  outlog *output;
 
   // Handling the scanner.
   void scan_begin();
