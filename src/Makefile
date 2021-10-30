@@ -1,7 +1,7 @@
 CODE_DIR = src
 
 BISON = bison -Wcounterexamples
-CXX = g++ -std=c++20 -Wall -g -fmax-errors=2
+CXX = g++ -std=c++20 -Wall -g -fmax-errors=4
 FLEX = flex
 BASE = minijuliac
 
@@ -17,7 +17,7 @@ all: $(BASE)
 	$(CXX) -c -o$@ $<
 
 $(BASE): $(BASE).o driver.o parser.o scanner.o variant.o builtin.o customlog.o
-	$(CXX) -o $@ $^
+	$(CXX) -o ../$@ $^
 
 $(BASE).o: parser.hh
 parser.o: parser.hh
@@ -27,10 +27,10 @@ builtin.o: parser.hh
 customlog.o: parser.hh
 
 examples: $(BASE)
-	./$(BASE) example.jl example.out.txt
+	../$(BASE) ../example.jl ../example.out.txt
 
 CLEANFILES =										\
-  $(BASE) *.o										\
+  ../$(BASE) *.o										\
   parser.hh parser.cc parser.output parser.xml parser.html location.hh	\
   scanner.cc
 

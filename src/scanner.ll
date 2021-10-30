@@ -163,7 +163,7 @@ void driver::scan_begin()
         yyin = stdin;
     else if (!(yyin = fopen(path_file_in.c_str(), "r")))
     {
-       // *tee << "cannot open " << path_file_in << ": " << strerror(errno) << '\n';
+        std::cerr << "Cannot read input file `" << path_file_in << "`: " << strerror(errno) << '\n';
         exit(EXIT_FAILURE);
     }
 }

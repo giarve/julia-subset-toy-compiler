@@ -70,8 +70,6 @@
 %%
 %start program;
 
-// QUICK FIX: Remove NEWLINE token in `program` grammar if the input reader appends a NEWLINE
-// at the end and removes newlines before the first statement
 program
     : NEWLINE statement_list
 	| statement_list
