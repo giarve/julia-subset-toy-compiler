@@ -59,7 +59,7 @@
 %nterm <variant::operable_multiarray> logical_or_expression logical_and_expression equality_expression relational_expression
 %nterm <variant::operable_multiarray> exponentiative_expression multiplicative_expression unary_expression postfix_expression
 %nterm <variant::operable_multiarray> additive_expression primary_expression assignment_expression
-%nterm <variant::operable_multiarray> composite_element_list_initialization
+%nterm <variant::operable_multiarray> composite_element_list_initialization composite_element_tuple_initialization
 %nterm <variant::operable> CONSTANT
 %nterm <std::pair<int,int>> composite_element_list_access
 %nterm <int> arith_bool_expr_to_integer
@@ -195,13 +195,23 @@ primary_expression
 	| CONSTANT		{ $$.insert_row_element($1); }
 	| LPAREN arith_bool_exprs RPAREN { $$ = $2; }
 	| LSQRBRKT composite_element_list_initialization RSQRBRKT { $$ = $2; }
+	| LSQRBRKT RSQRBRKT { } // empty array declaration
+	| LPAREN RPAREN { $$.is_tuple = true; } // empty tuple declaration
+	| LPAREN CONSTANT composite_element_tuple_initialization RPAREN { $$ = $3; $$.insert_row_element_start($2); }
 	| function { $$ = $1; }
 	;
 
-composite_element_list_initialization
+// change this if getting reduce conflicts to behave like tuple grammar (although this is faster when using vectors)
+composite_element_list_initialization 
 	: composite_element_list_initialization CONSTANT { $1.insert_row_element($2); $$ = $1; }
 	| composite_element_list_initialization SEMICOLON { $$ = $1; $$.add_new_row(); }
+	| composite_element_list_initialization COMMA { $$ = $1; $$.add_new_row(); }
 	| CONSTANT { $$.insert_row_element($1); }
+	;
+
+composite_element_tuple_initialization
+	: composite_element_tuple_initialization COMMA CONSTANT {  $$ = $1; $$.insert_row_element($3); $$.is_tuple = true; }
+	| COMMA CONSTANT { $$.insert_row_element($2); $$.is_tuple = true; }
 	;
 
 function

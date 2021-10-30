@@ -1,4 +1,5 @@
 # Identifiers, variables and types
+
 i = 10
 r = 0.5 
 s = "Hello"
@@ -92,3 +93,8 @@ transpose([4 5 1])
 # Errors, keep compiling!
 div(3,0)
 123 % 12.4
+
+tuple = (1,2,3,4)
+1*tuple
+tuple_sum = +(tuple)
+tuple - (1,2)

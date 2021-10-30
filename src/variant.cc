@@ -351,7 +351,8 @@ namespace variant
 			return stream;
 		}
 
-		stream << '[';
+		opm.is_tuple ? stream << '(' : stream << '[';
+
 		for (size_t i = 0; i < opm.values.size(); i++)
 		{
 			for (size_t j = 0; j < opm.values[i].size(); j++)
@@ -365,20 +366,25 @@ namespace variant
 			if (i < opm.values.size() - 1)
 				stream << ';' << ' ';
 		}
-		stream << ']';
+
+		opm.is_tuple ? stream << ')' : stream << ']';
 
 		return stream;
 	}
 
 	operable_multiarray operator+(operable_multiarray lhs, const operable_multiarray &rhs)
 	{
+		if (lhs.is_tuple || rhs.is_tuple)
+		{
+			std::ostringstream ss;
+			ss << "cannot operate on tuples: " << lhs << " + " << rhs;
+			throw SemanticException(ss.str());
+		}
+
 		if (operable_multiarray::dimension_mismatch(lhs, rhs))
 		{
 			std::ostringstream ss;
-			ss << "cannot operate due to dimension mismatch: ";
-			ss << lhs;
-			ss << " + ";
-			ss << rhs;
+			ss << "cannot operate due to dimension mismatch: " << lhs << " + " << rhs;
 			throw SemanticException(ss.str());
 		}
 
@@ -393,13 +399,17 @@ namespace variant
 	}
 	operable_multiarray operator-(operable_multiarray lhs, const operable_multiarray &rhs)
 	{
+		if (lhs.is_tuple || rhs.is_tuple)
+		{
+			std::ostringstream ss;
+			ss << "cannot operate on tuples: " << lhs << " - " << rhs;
+			throw SemanticException(ss.str());
+		}
+
 		if (operable_multiarray::dimension_mismatch(lhs, rhs))
 		{
 			std::ostringstream ss;
-			ss << "cannot operate due to dimension mismatch: ";
-			ss << lhs;
-			ss << " - ";
-			ss << rhs;
+			ss << "cannot operate due to dimension mismatch: " << lhs << " - " << rhs;
 			throw SemanticException(ss.str());
 		}
 
@@ -414,6 +424,13 @@ namespace variant
 	}
 	operable_multiarray operator*(operable_multiarray lhs, const operable_multiarray &rhs)
 	{
+		if (lhs.is_tuple || rhs.is_tuple)
+		{
+			std::ostringstream ss;
+			ss << "cannot operate on tuples: " << lhs << " * " << rhs;
+			throw SemanticException(ss.str());
+		}
+
 		const operable *scalar_equivalent_lhs = lhs.scalar_equivalent();
 		const operable *scalar_equivalent_rhs = rhs.scalar_equivalent();
 
@@ -466,16 +483,20 @@ namespace variant
 		else
 		{
 			std::ostringstream ss;
-			ss << "cannot operate: ";
-			ss << lhs;
-			ss << " * ";
-			ss << rhs;
+			ss << "cannot operate: " << lhs << " * " << rhs;
 			throw SemanticException(ss.str());
 		}
 	}
 
 	operable_multiarray operator/(operable_multiarray lhs, const operable_multiarray &rhs)
 	{
+		if (lhs.is_tuple || rhs.is_tuple)
+		{
+			std::ostringstream ss;
+			ss << "cannot operate on tuples: " << lhs << " / " << rhs;
+			throw SemanticException(ss.str());
+		}
+
 		const operable *scalar_equivalent_lhs = lhs.scalar_equivalent();
 		const operable *scalar_equivalent_rhs = rhs.scalar_equivalent();
 
@@ -484,15 +505,19 @@ namespace variant
 		else
 		{
 			std::ostringstream ss;
-			ss << "cannot operate: ";
-			ss << lhs;
-			ss << " / ";
-			ss << rhs;
+			ss << "cannot operate: " << lhs << " / " << rhs;
 			throw SemanticException(ss.str());
 		}
 	}
 	operable_multiarray operator%(operable_multiarray lhs, const operable_multiarray &rhs)
 	{
+		if (lhs.is_tuple || rhs.is_tuple)
+		{
+			std::ostringstream ss;
+			ss << "cannot operate on tuples: " << lhs << " % " << rhs;
+			throw SemanticException(ss.str());
+		}
+
 		const operable *scalar_equivalent_lhs = lhs.scalar_equivalent();
 		const operable *scalar_equivalent_rhs = rhs.scalar_equivalent();
 
@@ -501,15 +526,19 @@ namespace variant
 		else
 		{
 			std::ostringstream ss;
-			ss << "cannot operate: ";
-			ss << lhs;
-			ss << " % ";
-			ss << rhs;
+			ss << "cannot operate: " << lhs << " % " << rhs;
 			throw SemanticException(ss.str());
 		}
 	}
 	operable_multiarray operator^(operable_multiarray lhs, const operable_multiarray &rhs)
 	{
+		if (lhs.is_tuple || rhs.is_tuple)
+		{
+			std::ostringstream ss;
+			ss << "cannot operate on tuples: " << lhs << " ^ " << rhs;
+			throw SemanticException(ss.str());
+		}
+
 		const operable *scalar_equivalent_lhs = lhs.scalar_equivalent();
 		const operable *scalar_equivalent_rhs = rhs.scalar_equivalent();
 
@@ -518,16 +547,26 @@ namespace variant
 		else
 		{
 			std::ostringstream ss;
-			ss << "cannot operate: ";
-			ss << lhs;
-			ss << " ^ ";
-			ss << rhs;
+			ss << "cannot operate: " << lhs << " ^ " << rhs;
 			throw SemanticException(ss.str());
 		}
 	}
 
 	operable_multiarray operable_multiarray::operator+()
 	{
+		if (is_tuple)
+		{
+			variant::operable adder;
+			for (auto &&row : values)
+			{
+				for (auto &&col : row)
+				{
+					adder = adder + col;
+				}
+			}
+			return adder;
+		}
+
 		// Broadcast
 		for (auto &&row : values)
 		{
@@ -541,6 +580,13 @@ namespace variant
 
 	operable_multiarray operable_multiarray::operator-()
 	{
+		if (is_tuple)
+		{
+			std::ostringstream ss;
+			ss << "cannot operate on tuples: -" << this;
+			throw SemanticException(ss.str());
+		}
+
 		// Broadcast
 		for (auto &&row : values)
 		{
@@ -555,6 +601,13 @@ namespace variant
 
 	operable_multiarray operable_multiarray::operator!()
 	{
+		if (is_tuple)
+		{
+			std::ostringstream ss;
+			ss << "cannot operate on tuples: !" << this;
+			throw SemanticException(ss.str());
+		}
+
 		// Broadcast
 		for (auto &&row : values)
 		{
@@ -593,6 +646,13 @@ namespace variant
 	}
 	bool operator&&(const operable_multiarray &lhs, const operable_multiarray &rhs)
 	{
+		if (lhs.is_tuple || rhs.is_tuple)
+		{
+			std::ostringstream ss;
+			ss << "cannot operate on tuples: " << lhs << " && " << rhs;
+			throw SemanticException(ss.str());
+		}
+
 		const operable *scalar_equivalent_lhs = lhs.scalar_equivalent();
 		const operable *scalar_equivalent_rhs = rhs.scalar_equivalent();
 
@@ -601,15 +661,19 @@ namespace variant
 		else
 		{
 			std::ostringstream ss;
-			ss << "cannot operate: ";
-			ss << lhs;
-			ss << " && ";
-			ss << rhs;
+			ss << "cannot operate: " << lhs << " && " << rhs;
 			throw SemanticException(ss.str());
 		}
 	}
 	bool operator||(const operable_multiarray &lhs, const operable_multiarray &rhs)
 	{
+		if (lhs.is_tuple || rhs.is_tuple)
+		{
+			std::ostringstream ss;
+			ss << "cannot operate on tuples: " << lhs << " || " << rhs;
+			throw SemanticException(ss.str());
+		}
+
 		const operable *scalar_equivalent_lhs = lhs.scalar_equivalent();
 		const operable *scalar_equivalent_rhs = rhs.scalar_equivalent();
 
@@ -618,10 +682,7 @@ namespace variant
 		else
 		{
 			std::ostringstream ss;
-			ss << "cannot operate: ";
-			ss << lhs;
-			ss << " || ";
-			ss << rhs;
+			ss << "cannot operate: " << lhs << " || " << rhs;
 			throw SemanticException(ss.str());
 		}
 	}

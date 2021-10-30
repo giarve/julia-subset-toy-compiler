@@ -92,6 +92,8 @@ namespace variant
 	public:
 		std::optional<std::string> identifier;
 
+		bool is_tuple = false; // is it read only?
+
 		std::vector<std::vector<operable>> values = {std::vector<operable>{}};
 
 		operable_multiarray() {} // Used by bison for nterm
@@ -125,6 +127,12 @@ namespace variant
 		void insert_row_element(operable op)
 		{
 			values[values.size() - 1].emplace_back(op);
+		}
+
+		void insert_row_element_start(operable op)
+		{
+			auto&& current_row = values[values.size() - 1];
+			current_row.emplace(current_row.begin(), op);
 		}
 
 		void add_new_row()
