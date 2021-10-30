@@ -88,3 +88,7 @@ transpose([4 5 1])
 0.7
 0.3e+12
 0.4e-12
+
+# Errors, keep compiling!
+div(3,0)
+123 % 12.4

@@ -19,14 +19,31 @@ concept integral_or_floating_point = std::integral<T> || std::floating_point<T>;
 
 namespace variant
 {
-	enum JuliaType {
+	struct SemanticException : public std::exception
+	{
+		std::string message;
+
+		template <typename T>
+		SemanticException(T what_arg)
+		{
+			message = std::string("semantic error: ") + what_arg;
+		}
+
+		const char *what() const throw()
+		{
+			return message.c_str();
+		}
+	};
+
+	enum JuliaType
+	{
 		Int32,
 		Float64,
 		String,
-		Bool	
+		Bool
 	};
 
-	using operable_variant_t = std::variant<int, float, std::string, bool>;
+	using operable_variant_t = std::variant<int, double, std::string, bool>;
 
 	std::string stringify_operable_variant(operable_variant_t v);
 

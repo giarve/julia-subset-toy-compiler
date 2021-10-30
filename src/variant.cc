@@ -25,11 +25,11 @@ namespace variant
 								 return std::visit(overloaded{
 													   [&](auto rhs_arg) -> operable_variant_t
 													   {
-														   throw std::runtime_error("cannot add string '" + lhs_arg + "' with: " + stringify_operable_variant(rhs_arg));
+														   throw SemanticException("cannot add string '" + lhs_arg + "' with: " + stringify_operable_variant(rhs_arg));
 													   },
 													   [&](std::string rhs_arg) -> operable_variant_t
 													   {
-														   throw std::runtime_error("use * operator to add string '" + lhs_arg + "' with: " + stringify_operable_variant(rhs_arg));
+														   throw SemanticException("use * operator to add string '" + lhs_arg + "' with: " + stringify_operable_variant(rhs_arg));
 													   },
 												   },
 												   rhs.value);
@@ -43,7 +43,7 @@ namespace variant
 													   },
 													   [&](std::string rhs_arg) -> operable_variant_t
 													   {
-														   throw std::runtime_error("cannot add string '" + stringify_operable_variant(lhs_arg) + "' with: " + rhs_arg);
+														   throw SemanticException("cannot add string '" + stringify_operable_variant(lhs_arg) + "' with: " + rhs_arg);
 													   },
 												   },
 												   rhs.value);
@@ -61,11 +61,11 @@ namespace variant
 								 return std::visit(overloaded{
 													   [&](auto rhs_arg) -> operable_variant_t
 													   {
-														   throw std::runtime_error("cannot substract string '" + lhs_arg + "' with: " + stringify_operable_variant(rhs_arg));
+														   throw SemanticException("cannot substract string '" + lhs_arg + "' with: " + stringify_operable_variant(rhs_arg));
 													   },
 													   [&](std::string rhs_arg) -> operable_variant_t
 													   {
-														   throw std::runtime_error("cannot substract string '" + lhs_arg + "' with: " + stringify_operable_variant(rhs_arg));
+														   throw SemanticException("cannot substract string '" + lhs_arg + "' with: " + stringify_operable_variant(rhs_arg));
 													   },
 												   },
 												   rhs.value);
@@ -79,7 +79,7 @@ namespace variant
 													   },
 													   [&](std::string rhs_arg) -> operable_variant_t
 													   {
-														   throw std::runtime_error("cannot substract string '" + stringify_operable_variant(lhs_arg) + "' with: " + rhs_arg);
+														   throw SemanticException("cannot substract string '" + stringify_operable_variant(lhs_arg) + "' with: " + rhs_arg);
 													   },
 												   },
 												   rhs.value);
@@ -97,7 +97,7 @@ namespace variant
 								 return std::visit(overloaded{
 													   [&](auto rhs_arg) -> operable_variant_t
 													   {
-														   throw std::runtime_error("cannot multiply string '" + lhs_arg + "' with: " + stringify_operable_variant(rhs_arg));
+														   throw SemanticException("cannot multiply string '" + lhs_arg + "' with: " + stringify_operable_variant(rhs_arg));
 													   },
 													   [&](std::string rhs_arg) -> operable_variant_t
 													   {
@@ -115,7 +115,7 @@ namespace variant
 													   },
 													   [&](std::string rhs_arg) -> operable_variant_t
 													   {
-														   throw std::runtime_error("cannot multiply string '" + stringify_operable_variant(lhs_arg) + "' with: " + rhs_arg);
+														   throw SemanticException("cannot multiply string '" + stringify_operable_variant(lhs_arg) + "' with: " + rhs_arg);
 													   },
 												   },
 												   rhs.value);
@@ -133,11 +133,11 @@ namespace variant
 								 return std::visit(overloaded{
 													   [&](auto rhs_arg) -> operable_variant_t
 													   {
-														   throw std::runtime_error("cannot divide string '" + lhs_arg + "' with: " + stringify_operable_variant(rhs_arg));
+														   throw SemanticException("cannot divide string '" + lhs_arg + "' with: " + stringify_operable_variant(rhs_arg));
 													   },
 													   [&](std::string rhs_arg) -> operable_variant_t
 													   {
-														   throw std::runtime_error("cannot divide string '" + lhs_arg + "' with: " + stringify_operable_variant(rhs_arg));
+														   throw SemanticException("cannot divide string '" + lhs_arg + "' with: " + stringify_operable_variant(rhs_arg));
 													   },
 												   },
 												   rhs.value);
@@ -151,7 +151,7 @@ namespace variant
 													   },
 													   [&](std::string rhs_arg) -> operable_variant_t
 													   {
-														   throw std::runtime_error("cannot divide " + stringify_operable_variant(lhs_arg) + " with string: " + rhs_arg);
+														   throw SemanticException("cannot divide " + stringify_operable_variant(lhs_arg) + " with string: " + rhs_arg);
 													   },
 												   },
 												   rhs.value);
@@ -169,7 +169,7 @@ namespace variant
 								 return std::visit(overloaded{
 													   [&](auto rhs_arg) -> operable_variant_t
 													   {
-														   throw std::runtime_error("cannot modulus integer " + stringify_operable_variant(lhs_arg) + " with non-integer: " + stringify_operable_variant(rhs_arg));
+														   throw SemanticException("cannot modulus integer " + stringify_operable_variant(lhs_arg) + " with non-integer: " + stringify_operable_variant(rhs_arg));
 													   },
 													   [&](int rhs_arg) -> operable_variant_t
 													   {
@@ -183,11 +183,11 @@ namespace variant
 								 return std::visit(overloaded{
 													   [&](auto rhs_arg) -> operable_variant_t
 													   {
-														   throw std::runtime_error("cannot modulus non-integers " + stringify_operable_variant(lhs_arg) + " with: " + stringify_operable_variant(rhs_arg));
+														   throw SemanticException("cannot modulus non-integers " + stringify_operable_variant(lhs_arg) + " with: " + stringify_operable_variant(rhs_arg));
 													   },
 													   [&](int rhs_arg) -> operable_variant_t
 													   {
-														   throw std::runtime_error("cannot modulus non-integer " + stringify_operable_variant(lhs_arg) + " with integer: " + stringify_operable_variant(rhs_arg));
+														   throw SemanticException("cannot modulus non-integer " + stringify_operable_variant(lhs_arg) + " with integer: " + stringify_operable_variant(rhs_arg));
 													   },
 												   },
 												   rhs.value);
@@ -203,11 +203,11 @@ namespace variant
 										return std::visit(overloaded{
 															  [&](auto rhs_arg) -> operable_variant_t
 															  {
-																  throw std::runtime_error("cannot exponentiate integer " + stringify_operable_variant(lhs_arg) + " with: " + stringify_operable_variant(rhs_arg));
+																  throw SemanticException("cannot exponentiate integer " + stringify_operable_variant(lhs_arg) + " with: " + stringify_operable_variant(rhs_arg));
 															  },
 															  [&](integral_or_floating_point auto rhs_arg) -> operable_variant_t
 															  {
-																  return (float)std::pow(lhs_arg, rhs_arg);
+																  return (double)std::pow(lhs_arg, rhs_arg);
 															  },
 														  },
 														  rhs.value);
@@ -216,7 +216,7 @@ namespace variant
 									{
 										return std::visit(overloaded{[&](auto rhs_arg) -> operable_variant_t
 																	 {
-																		 throw std::runtime_error("cannot exponentiate string '" + lhs_arg + "' with: " + stringify_operable_variant(rhs_arg));
+																		 throw SemanticException("cannot exponentiate string '" + lhs_arg + "' with: " + stringify_operable_variant(rhs_arg));
 																	 },
 																	 [&](int rhs_arg) -> operable_variant_t
 																	 {
@@ -227,7 +227,7 @@ namespace variant
 																	 },
 																	 [&](std::floating_point auto rhs_arg) -> operable_variant_t
 																	 {
-																		 throw std::runtime_error("cannot exponentiate string '" + lhs_arg + "' with floating point: " + stringify_operable_variant(rhs_arg));
+																		 throw SemanticException("cannot exponentiate string '" + lhs_arg + "' with floating point: " + stringify_operable_variant(rhs_arg));
 																	 }
 
 														  },
@@ -237,7 +237,7 @@ namespace variant
 									{
 										return std::visit(overloaded{[&](auto rhs_arg) -> operable_variant_t
 																	 {
-																		 throw std::runtime_error("cannot exponentiate " + stringify_operable_variant(lhs_arg) + " with: " + stringify_operable_variant(rhs_arg));
+																		 throw SemanticException("cannot exponentiate " + stringify_operable_variant(lhs_arg) + " with: " + stringify_operable_variant(rhs_arg));
 																	 }},
 														  rhs.value);
 									}},
@@ -253,7 +253,7 @@ namespace variant
 									 },
 									 [&](auto val) -> operable
 									 {
-										 throw std::runtime_error("invalid '+' unary expression for: " + stringify_operable_variant(val));
+										 throw SemanticException("invalid '+' unary expression for: " + stringify_operable_variant(val));
 									 }},
 						  this->value);
 	}
@@ -267,7 +267,7 @@ namespace variant
 									 },
 									 [&](auto val) -> operable
 									 {
-										 throw std::runtime_error("invalid '-' unary expression for: " + stringify_operable_variant(val));
+										 throw SemanticException("invalid '-' unary expression for: " + stringify_operable_variant(val));
 									 }},
 						  this->value);
 	}
@@ -280,7 +280,7 @@ namespace variant
 										  },
 										  [&](auto val) -> bool
 										  {
-											  throw std::runtime_error("invalid '!' unary expression for: " + stringify_operable_variant(val));
+											  throw SemanticException("invalid '!' unary expression for: " + stringify_operable_variant(val));
 										  }},
 							   this->value));
 		return op;
@@ -293,7 +293,7 @@ namespace variant
 										 return std::visit(overloaded{
 															   [&](auto rhs_arg) -> bool
 															   {
-																   throw std::runtime_error("invalid boolean operation: " + stringify_operable_variant(lhs_arg) + " && " + stringify_operable_variant(rhs_arg));
+																   throw SemanticException("invalid boolean operation: " + stringify_operable_variant(lhs_arg) + " && " + stringify_operable_variant(rhs_arg));
 															   },
 															   [&](bool rhs_arg) -> bool
 															   {
@@ -306,7 +306,7 @@ namespace variant
 									 {
 										 return std::visit(overloaded{[&](auto rhs_arg) -> bool
 																	  {
-																		  throw std::runtime_error("invalid boolean operation: " + stringify_operable_variant(lhs_arg) + " && " + stringify_operable_variant(rhs_arg));
+																		  throw SemanticException("invalid boolean operation: " + stringify_operable_variant(lhs_arg) + " && " + stringify_operable_variant(rhs_arg));
 																	  }},
 														   rhs.value);
 									 }},
@@ -320,7 +320,7 @@ namespace variant
 										 return std::visit(overloaded{
 															   [&](auto rhs_arg) -> bool
 															   {
-																   throw std::runtime_error("invalid boolean operation: " + stringify_operable_variant(lhs_arg) + " || " + stringify_operable_variant(rhs_arg));
+																   throw SemanticException("invalid boolean operation: " + stringify_operable_variant(lhs_arg) + " || " + stringify_operable_variant(rhs_arg));
 															   },
 															   [&](bool rhs_arg) -> bool
 															   {
@@ -333,7 +333,7 @@ namespace variant
 									 {
 										 return std::visit(overloaded{[&](auto rhs_arg) -> bool
 																	  {
-																		  throw std::runtime_error("invalid boolean operation: " + stringify_operable_variant(lhs_arg) + " || " + stringify_operable_variant(rhs_arg));
+																		  throw SemanticException("invalid boolean operation: " + stringify_operable_variant(lhs_arg) + " || " + stringify_operable_variant(rhs_arg));
 																	  }},
 														   rhs.value);
 									 }},
@@ -379,7 +379,7 @@ namespace variant
 			ss << lhs;
 			ss << " + ";
 			ss << rhs;
-			throw std::runtime_error(ss.str());
+			throw SemanticException(ss.str());
 		}
 
 		for (size_t i = 0; i < lhs.values.size(); i++)
@@ -400,7 +400,7 @@ namespace variant
 			ss << lhs;
 			ss << " - ";
 			ss << rhs;
-			throw std::runtime_error(ss.str());
+			throw SemanticException(ss.str());
 		}
 
 		for (size_t i = 0; i < lhs.values.size(); i++)
@@ -470,7 +470,7 @@ namespace variant
 			ss << lhs;
 			ss << " * ";
 			ss << rhs;
-			throw std::runtime_error(ss.str());
+			throw SemanticException(ss.str());
 		}
 	}
 
@@ -488,7 +488,7 @@ namespace variant
 			ss << lhs;
 			ss << " / ";
 			ss << rhs;
-			throw std::runtime_error(ss.str());
+			throw SemanticException(ss.str());
 		}
 	}
 	operable_multiarray operator%(operable_multiarray lhs, const operable_multiarray &rhs)
@@ -505,7 +505,7 @@ namespace variant
 			ss << lhs;
 			ss << " % ";
 			ss << rhs;
-			throw std::runtime_error(ss.str());
+			throw SemanticException(ss.str());
 		}
 	}
 	operable_multiarray operator^(operable_multiarray lhs, const operable_multiarray &rhs)
@@ -522,7 +522,7 @@ namespace variant
 			ss << lhs;
 			ss << " ^ ";
 			ss << rhs;
-			throw std::runtime_error(ss.str());
+			throw SemanticException(ss.str());
 		}
 	}
 
@@ -605,7 +605,7 @@ namespace variant
 			ss << lhs;
 			ss << " && ";
 			ss << rhs;
-			throw std::runtime_error(ss.str());
+			throw SemanticException(ss.str());
 		}
 	}
 	bool operator||(const operable_multiarray &lhs, const operable_multiarray &rhs)
@@ -622,7 +622,7 @@ namespace variant
 			ss << lhs;
 			ss << " || ";
 			ss << rhs;
-			throw std::runtime_error(ss.str());
+			throw SemanticException(ss.str());
 		}
 	}
 

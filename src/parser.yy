@@ -28,6 +28,12 @@
   #include "driver.hh"
   #include <unordered_map>
 
+
+  // Prologue and epilogue semantic action
+  // Throw an error in the epilogue to stop compilation
+  #define PRLG try { 
+  #define EPLG } catch (variant::SemanticException const &e) { yy::parser::error(drv.location, e.what());  /* throw yy::parser::syntax_error(drv.location, e.what()); */ }
+
   std::unordered_map<std::string, variant::operable_multiarray> symtab;
 }
 
@@ -92,9 +98,11 @@ expression
 
 assignment_expression
 	: IDENTIFIER EQUALS_SIGN arith_bool_exprs
-		{ 
+		{
+			PRLG
 			$$ = $3;
 			$$.identifier = $1;
+			EPLG
 		}
 	;
 
@@ -104,51 +112,51 @@ arith_bool_exprs
 
 logical_or_expression
 	: logical_and_expression { $$ = $1; }
-	| logical_or_expression OR logical_and_expression { $$ = $1 || $3; }
+	| logical_or_expression OR logical_and_expression { PRLG $$ = $1 || $3; EPLG }
 	;
 
 logical_and_expression
 	: equality_expression { $$ = $1; }
-	| logical_and_expression AND equality_expression	{ $$ = $1 && $3; }
+	| logical_and_expression AND equality_expression	{ PRLG $$ = $1 && $3; EPLG }
 	;
 
 equality_expression
 	: relational_expression { $$ = $1; }
-	| equality_expression DOUBLE_EQUAL relational_expression { $$ = $1 == $3; }
-	| equality_expression BANG_EQUAL relational_expression	 { $$ = $1 != $3; }
+	| equality_expression DOUBLE_EQUAL relational_expression { PRLG $$ = $1 == $3; EPLG }
+	| equality_expression BANG_EQUAL relational_expression	 { PRLG $$ = $1 != $3; EPLG }
 	;
 
 relational_expression
 	: additive_expression { $$ = $1; }
-	| relational_expression LOWER additive_expression			{ $$ = $1 < $3; }
-	| relational_expression LOWER_EQUAL additive_expression		{ $$ = $1 <= $3; }
-	| relational_expression GREATER additive_expression			{ $$ = $1 > $3; }
-	| relational_expression GREATER_EQUAL additive_expression	{ $$ = $1 >= $3; }
+	| relational_expression LOWER additive_expression			{ PRLG $$ = $1 < $3;  EPLG }
+	| relational_expression LOWER_EQUAL additive_expression		{ PRLG $$ = $1 <= $3; EPLG  }
+	| relational_expression GREATER additive_expression			{ PRLG $$ = $1 > $3;  EPLG }
+	| relational_expression GREATER_EQUAL additive_expression	{ PRLG $$ = $1 >= $3; EPLG  }
 	;
 
 additive_expression
 	: multiplicative_expression { $$ = $1; }
-	| additive_expression PLUS multiplicative_expression { $$ = $1 + $3; }
-	| additive_expression MINUS multiplicative_expression { $$ = $1 - $3; }
+	| additive_expression PLUS multiplicative_expression  { PRLG $$ = $1 + $3;  EPLG}
+	| additive_expression MINUS multiplicative_expression { PRLG $$ = $1 - $3; EPLG }
 	;
 
 multiplicative_expression
 	: exponentiative_expression { $$ = $1; }
-	| multiplicative_expression STAR exponentiative_expression 		{ $$ = $1 * $3; }
-	| multiplicative_expression SLASH exponentiative_expression		{ $$ = $1 / $3; }
-	| multiplicative_expression PERCENT exponentiative_expression	{ $$ = $1 % $3; }
+	| multiplicative_expression STAR exponentiative_expression 		{ PRLG $$ = $1 * $3; EPLG }
+	| multiplicative_expression SLASH exponentiative_expression		{ PRLG $$ = $1 / $3; EPLG }
+	| multiplicative_expression PERCENT exponentiative_expression	{ PRLG $$ = $1 % $3; EPLG }
 	;
 
 exponentiative_expression
 	: unary_expression { $$ = $1; }
-	| exponentiative_expression CIRCUMFLEX unary_expression { $$ = $1 ^ $3; }
+	| exponentiative_expression CIRCUMFLEX unary_expression { PRLG $$ = $1 ^ $3; EPLG }
 	;
 
 unary_expression
 	: postfix_expression { $$ = $1;  }
-	| PLUS postfix_expression  { $$ = +$2; }
-	| MINUS postfix_expression { $$ = -$2; }
-	| BANG postfix_expression  { $$ = !$2; }
+	| PLUS postfix_expression  { PRLG $$ = +$2; EPLG }
+	| MINUS postfix_expression { PRLG $$ = -$2; EPLG }
+	| BANG postfix_expression  { PRLG $$ = !$2; EPLG }
 	;
 
 postfix_expression
@@ -197,12 +205,12 @@ composite_element_list_initialization
 	;
 
 function
-	: FUNC_DIV 		 arith_bool_expr_to_integer COMMA arith_bool_expr_to_integer RPAREN { $$ = builtin::div($2, $4); }
-	| FUNC_LENGTH	 arith_bool_exprs RPAREN { $$ = builtin::length($2); }
-	| FUNC_SIZE		 arith_bool_exprs RPAREN { $$ = builtin::size($2); }
-	| FUNC_TRANSPOSE arith_bool_exprs RPAREN { $$ = builtin::transpose($2); }
-	| FUNC_ONES TYPE COMMA arith_bool_expr_to_integer COMMA arith_bool_expr_to_integer RPAREN  { $$ = builtin::fill_with($2, 1, $4, $6); }
-	| FUNC_ZEROS TYPE COMMA arith_bool_expr_to_integer COMMA arith_bool_expr_to_integer RPAREN { $$ = builtin::fill_with($2, 0, $4, $6); }	
+	: FUNC_DIV 		 arith_bool_expr_to_integer COMMA arith_bool_expr_to_integer RPAREN { PRLG $$ = builtin::div($2, $4); EPLG }
+	| FUNC_LENGTH	 arith_bool_exprs RPAREN { PRLG $$ = builtin::length($2);    EPLG }
+	| FUNC_SIZE		 arith_bool_exprs RPAREN { PRLG $$ = builtin::size($2);      EPLG }
+	| FUNC_TRANSPOSE arith_bool_exprs RPAREN { PRLG $$ = builtin::transpose($2); EPLG }
+	| FUNC_ONES TYPE COMMA arith_bool_expr_to_integer COMMA arith_bool_expr_to_integer RPAREN  { PRLG $$ = builtin::fill_with($2, 1, $4, $6); EPLG }
+	| FUNC_ZEROS TYPE COMMA arith_bool_expr_to_integer COMMA arith_bool_expr_to_integer RPAREN { PRLG $$ = builtin::fill_with($2, 0, $4, $6); EPLG }	
 	;
 
 CONSTANT

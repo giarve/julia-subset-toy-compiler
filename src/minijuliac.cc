@@ -21,7 +21,8 @@ int main(int argc, char *argv[])
     }
     
     if(drv.parse(argv[1], argv[2]) != 0)
-        std::cout << "Error code: " << drv.result << std::endl;
+        ;
+        //std::cout << "Error code: " << drv.result << std::endl;
     else
         std::cout << "=== Success ==" << std::endl;
 

@@ -121,7 +121,7 @@ yy::parser::symbol_type make_INTEGER(const std::string &s, const yy::parser::loc
 
 yy::parser::symbol_type make_FLOAT(const std::string &s, const yy::parser::location_type &loc)
 {
-    float n = strtof(s.c_str(), NULL);
+    double n = strtod(s.c_str(), NULL);
     return yy::parser::make_FLOAT(n, loc);
 }
 

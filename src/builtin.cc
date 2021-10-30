@@ -4,6 +4,9 @@ namespace builtin
 {
     int div(const int lhs, const int rhs)
     {
+        if (rhs == 0)
+            throw variant::SemanticException("division by zero");
+
         return lhs / rhs;
     }
 
@@ -27,7 +30,7 @@ namespace builtin
                 return variant::operable(with);
                 break;
             case variant::JuliaType::Float64:
-                return variant::operable((float)with);
+                return variant::operable((double)with);
                 break;
             case variant::JuliaType::String:
                 return variant::operable("");
@@ -62,7 +65,7 @@ namespace builtin
                                          },
                                          [&](auto arg) -> int
                                          {
-                                             throw std::runtime_error("invalid type for length() builtin call");
+                                             throw variant::SemanticException("invalid type for length() builtin call");
                                          }},
                               scalar_equivalent->value);
 
