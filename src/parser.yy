@@ -54,6 +54,7 @@
 %token RSQRBRKT LSQRBRKT
 %token NEWLINE
 %token FUNC_DIV FUNC_LENGTH FUNC_SIZE FUNC_TRANSPOSE FUNC_ONES FUNC_ZEROS
+%token FUNC_SIN FUNC_COS FUNC_TAN FUNC_ASIN FUNC_ACOS FUNC_ATAN
 
 %nterm <variant::operable_multiarray> arith_bool_exprs
 %nterm <variant::operable_multiarray> logical_or_expression logical_and_expression equality_expression relational_expression
@@ -210,6 +211,7 @@ composite_element_list_initialization
 composite_element_tuple_initialization
 	: composite_element_tuple_initialization COMMA CONSTANT {  $$ = $1; $$.insert_row_element($3); $$.is_tuple = true; }
 	| COMMA CONSTANT { $$.insert_row_element($2); $$.is_tuple = true; }
+	| COMMA { $$.is_tuple = true; }
 	;
 
 function
@@ -219,6 +221,14 @@ function
 	| FUNC_TRANSPOSE arith_bool_exprs RPAREN { PRLG $$ = builtin::transpose($2); EPLG }
 	| FUNC_ONES TYPE COMMA arith_bool_expr_to_integer COMMA arith_bool_expr_to_integer RPAREN  { PRLG $$ = builtin::fill_with($2, 1, $4, $6); EPLG }
 	| FUNC_ZEROS TYPE COMMA arith_bool_expr_to_integer COMMA arith_bool_expr_to_integer RPAREN { PRLG $$ = builtin::fill_with($2, 0, $4, $6); EPLG }	
+
+	| FUNC_SIN arith_bool_exprs RPAREN { PRLG $$ = builtin::sin($2); EPLG }
+	| FUNC_COS arith_bool_exprs RPAREN { PRLG $$ = builtin::cos($2); EPLG }
+	| FUNC_TAN arith_bool_exprs RPAREN { PRLG $$ = builtin::tan($2); EPLG }
+	| FUNC_ASIN arith_bool_exprs RPAREN { PRLG $$ = builtin::asin($2); EPLG }
+	| FUNC_ACOS arith_bool_exprs RPAREN { PRLG $$ = builtin::acos($2); EPLG }
+	| FUNC_ATAN arith_bool_exprs RPAREN { PRLG $$ = builtin::atan($2); EPLG }
+
 	;
 
 CONSTANT

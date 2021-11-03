@@ -98,3 +98,20 @@ tuple = (1,2,3,4)
 1*tuple
 tuple_sum = +(tuple)
 tuple - (1,2)
+
+(1, pi)
+
+(1, )
+
+sin(90)
+sin(45.0)
+asin(0.5)
+
+cos(pi/3)
+
+tan(pi/4)
+
+acos(cos(pi/3))
+
+"atan(tan(pi/4)) == pi/4:"
+atan(tan(pi/4)) == pi/4

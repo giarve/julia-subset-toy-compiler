@@ -6,8 +6,7 @@ Using C++, bison and flex.
 
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- First steps
-  - [Setup Instructions](#setup-instructions)
+- [Setup Instructions](#setup-instructions)
 - [Features](#features)
 - [References](#references)
 <!-- /TOC -->
@@ -16,7 +15,7 @@ Using C++, bison and flex.
 
 ## Setup Instructions
 
-1. Set up dependencies such as `g++` (gcc compiler collection), `bison` and `flex`. Clang++ is currently not supported (although it can be quickly adapted) because of C++20 templating features (which is not entirely upstream yet).
+1. Set up dependencies such as `g++` (gcc compiler collection, tested on v11), `bison` and `flex`. Clang++ is currently not supported (although it can be quickly adapted) because of C++20 templating features (which is not entirely upstream yet).
 
 2. Run `make` to compile the compiler or `make examples` directly to compile and run the `src/example.jl` test file.
 
@@ -35,7 +34,10 @@ Using C++, bison and flex.
 - Arithmetic and boolean logic without short-circuit.
 - Single and multiline comments.
 - Structural equivalence for arrays, vectors and scalars of the same size.
+- π (pi) constant
+- Trigonometric functions (sin, cos, tan, asin, acos, atan)
 
+Check out `example.jl` file.
 
 
 ## References

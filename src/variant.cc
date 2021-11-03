@@ -1,4 +1,6 @@
 #include <cmath>
+#include <iomanip>
+
 #include "variant.hh"
 
 namespace variant
@@ -7,11 +9,23 @@ namespace variant
 
 	std::string stringify_operable_variant(operable_variant_t v)
 	{
-		return std::visit([](auto arg) -> std::string
-						  {
-							  std::stringstream ss;
-							  ss << std::boolalpha << std::showpoint << arg;
-							  return ss.str();
+		return std::visit(overloaded{
+							  [](auto arg) -> std::string
+							  {
+								  std::stringstream ss;
+								  ss << std::boolalpha << std::showpoint << arg;
+								  return ss.str();
+							  },
+							  [](double arg) -> std::string
+							  {
+								  std::stringstream ss;
+
+								  if (arg >= 3.1415 && arg <= 3.1416)
+									  ss << "π = ";
+
+								  ss /* << std::setprecision(10) */ << std::showpoint << arg;
+								  return ss.str();
+							  },
 						  },
 						  v);
 	}
@@ -345,7 +359,7 @@ namespace variant
 	std::ostream &operator<<(std::ostream &stream, const operable_multiarray &opm)
 	{
 		const operable *scalar_equivalent = opm.scalar_equivalent();
-		if (scalar_equivalent)
+		if (scalar_equivalent && !opm.is_tuple)
 		{
 			stream << *scalar_equivalent;
 			return stream;
@@ -360,14 +374,25 @@ namespace variant
 				stream << opm.values[i][j];
 
 				if (j < opm.values[i].size() - 1)
-					stream << ' ';
+				{
+					if (opm.is_tuple)
+						stream << ", ";
+					else
+						stream << ' ';
+				}
 			}
 
 			if (i < opm.values.size() - 1)
 				stream << ';' << ' ';
 		}
 
-		opm.is_tuple ? stream << ')' : stream << ']';
+		if (opm.is_tuple && scalar_equivalent)
+			stream << ",)";
+		else if (opm.is_tuple && !scalar_equivalent)
+			stream << ')';
+
+		if (!opm.is_tuple)
+			stream << ']';
 
 		return stream;
 	}
@@ -686,5 +711,4 @@ namespace variant
 			throw SemanticException(ss.str());
 		}
 	}
-
 }

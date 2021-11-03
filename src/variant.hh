@@ -119,7 +119,6 @@ namespace variant
 
 		operable_multiarray &operator=(operable &&rhs)
 		{
-			// TODO: reset vector to only hold an scalar?
 			values[0].emplace_back(rhs);
 			return *this;
 		}
