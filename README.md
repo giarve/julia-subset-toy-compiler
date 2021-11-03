@@ -15,16 +15,16 @@ Using C++, bison and flex.
 
 ## Setup Instructions
 
-1. Set up dependencies such as `g++` (gcc compiler collection, tested on v11), `bison` and `flex`. Clang++ is currently not supported (although it can be quickly adapted) because of C++20 templating features (which is not entirely upstream yet).
+1. Set up dependencies such as `g++` (gcc compiler collection, tested on v11), `bison` and `flex`. Clang++ is currently not supported (although it can be quickly adapted) because of C++20 templating features (which are not entirely upstream yet).
 
-2. Run `make` to compile the compiler or `make examples` directly to compile and run the `src/example.jl` test file.
+2. Run `make` to compile the compiler or `make examples` directly to compile and run the `src/example.jl` test file (check `example.out.txt` or console).
 
 3. A binary called `minijuliac` is generated. The first two arguments define the input and output file, and the third one (no matter which value) sets if debugging (flex and bison) is enabled. The input file should have an empty line at the end or the compiler will complain.
 
     - Debugging off: `./minijuliac inputfile.jl outputfile.txt`
     - Debugging on: `./minijuliac inputfile.jl outputfile.txt SURPRISE`
 
-5. Run `make clean` to clean up repository (this won't delete output files).
+5. Run `make clean` to clean up repository (this won't delete output .txt files).
 
 ## Features
 
