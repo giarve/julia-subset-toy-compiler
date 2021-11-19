@@ -53,8 +53,7 @@
 %token GREATER LOWER GREATER_EQUAL LOWER_EQUAL
 %token RSQRBRKT LSQRBRKT
 %token NEWLINE
-%token FUNC_DIV FUNC_LENGTH FUNC_SIZE FUNC_TRANSPOSE FUNC_ONES FUNC_ZEROS
-%token FUNC_SIN FUNC_COS FUNC_TAN FUNC_ASIN FUNC_ACOS FUNC_ATAN
+%token FUNCTION_START FUNCTION_END DOUBLECOLON RETURN
 
 %nterm <variant::operable_multiarray> arith_bool_exprs
 %nterm <variant::operable_multiarray> logical_or_expression logical_and_expression equality_expression relational_expression
@@ -64,7 +63,7 @@
 %nterm <variant::operable> CONSTANT
 %nterm <std::pair<int,int>> composite_element_list_access
 %nterm <int> arith_bool_expr_to_integer
-%nterm <variant::operable_multiarray> function
+//%nterm <variant::operable_multiarray> function_definition
 
 // %printer { yyo << $$; } <*>; // debugging print
 
@@ -72,16 +71,49 @@
 %start program;
 
 program
-    : NEWLINE statement_list
-	| statement_list
-    ;
-
-statement_list
-	: statement_list expression
-	| expression
+	: declaration_list
 	;
 
-expression
+declaration_list
+	: declaration_list declaration
+	| declaration
+	;
+
+declaration
+	: function_definition
+	| statement
+	;
+
+function_definition
+	: FUNCTION_START IDENTIFIER LPAREN parameter_list.opt RPAREN type_declaration.opt NEWLINE function_statement_list.opt FUNCTION_END NEWLINE
+	;
+
+parameter_list.opt:
+	%empty
+	| parameter_list.opt COMMA parameter_declaration
+	| parameter_declaration
+	;
+
+parameter_declaration
+	: IDENTIFIER type_declaration.opt
+	;
+
+type_declaration.opt:
+	%empty
+	| DOUBLECOLON TYPE
+	;
+
+function_statement_list.opt:
+	%empty
+	| statement_list
+	;
+
+statement_list
+	: statement_list statement
+	| statement
+	;
+
+statement
 	: assignment_expression NEWLINE { 
 		symtab[$1.identifier.value()] = $1;
 		std::ostringstream ss;
@@ -197,7 +229,6 @@ primary_expression
 	| LSQRBRKT RSQRBRKT { } // empty array declaration
 	| LPAREN RPAREN { $$.is_tuple = true; } // empty tuple declaration
 	| LPAREN CONSTANT composite_element_tuple_initialization RPAREN { $$ = $3; $$.insert_row_element_start($2); }
-	| function { $$ = $1; }
 	;
 
 // change this if getting reduce conflicts to behave like tuple grammar (although this is faster when using vectors)
@@ -214,22 +245,7 @@ composite_element_tuple_initialization
 	| COMMA { $$.is_tuple = true; }
 	;
 
-function
-	: FUNC_DIV 		 arith_bool_expr_to_integer COMMA arith_bool_expr_to_integer RPAREN { PRLG $$ = builtin::div($2, $4); EPLG }
-	| FUNC_LENGTH	 arith_bool_exprs RPAREN { PRLG $$ = builtin::length($2);    EPLG }
-	| FUNC_SIZE		 arith_bool_exprs RPAREN { PRLG $$ = builtin::size($2);      EPLG }
-	| FUNC_TRANSPOSE arith_bool_exprs RPAREN { PRLG $$ = builtin::transpose($2); EPLG }
-	| FUNC_ONES TYPE COMMA arith_bool_expr_to_integer COMMA arith_bool_expr_to_integer RPAREN  { PRLG $$ = builtin::fill_with($2, 1, $4, $6); EPLG }
-	| FUNC_ZEROS TYPE COMMA arith_bool_expr_to_integer COMMA arith_bool_expr_to_integer RPAREN { PRLG $$ = builtin::fill_with($2, 0, $4, $6); EPLG }	
-
-	| FUNC_SIN arith_bool_exprs RPAREN { PRLG $$ = builtin::sin($2); EPLG }
-	| FUNC_COS arith_bool_exprs RPAREN { PRLG $$ = builtin::cos($2); EPLG }
-	| FUNC_TAN arith_bool_exprs RPAREN { PRLG $$ = builtin::tan($2); EPLG }
-	| FUNC_ASIN arith_bool_exprs RPAREN { PRLG $$ = builtin::asin($2); EPLG }
-	| FUNC_ACOS arith_bool_exprs RPAREN { PRLG $$ = builtin::acos($2); EPLG }
-	| FUNC_ATAN arith_bool_exprs RPAREN { PRLG $$ = builtin::atan($2); EPLG }
-
-	;
+	// FUNC_DIV 		 arith_bool_expr_to_integer COMMA arith_bool_expr_to_integer RPAREN { PRLG $$ = builtin::div($2, $4); EPLG }
 
 CONSTANT
 	: INTEGER { $$.value = $1; }
