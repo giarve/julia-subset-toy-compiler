@@ -125,6 +125,8 @@ statement
 		ss << $1 << std::endl;
 		drv.output->cout(ss.str());
 	}
+	| RETURN NEWLINE
+	| RETURN statement
 	;
 
 assignment_expression

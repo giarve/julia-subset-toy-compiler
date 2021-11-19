@@ -43,12 +43,15 @@ STRING \"([^\\\"]|\\.)*\"
   loc.step ();
 %}
 
-{NEWLINE}+    { loc.lines (yyleng); loc.step(); return yy::parser::make_NEWLINE(loc); }
-
 {BLANK}+  loc.step ();
 
+^{BLANK}*{NEWLINE} { loc.lines (1); loc.step(); }
+^{NEWLINE}$ { loc.lines (1); loc.step(); }
+
+{NEWLINE} { loc.lines (yyleng); loc.step(); return yy::parser::make_NEWLINE(loc); }
+
 "#"                            BEGIN(COMMENT_SINGLELINE);
-<COMMENT_SINGLELINE>{NEWLINE}+ { loc.lines (yyleng); loc.step(); BEGIN(INITIAL); }
+<COMMENT_SINGLELINE>{NEWLINE}  { loc.lines(1); loc.step(); BEGIN(INITIAL); }
 <COMMENT_SINGLELINE>.          { }
 
 "#="                              BEGIN(COMMENT_MULTILINE);

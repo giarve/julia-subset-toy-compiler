@@ -8,6 +8,21 @@ end
 function no_body_no_params_no_return_type()
 end
 
+function params_ret_a(a::Float64)::Int32
+    return a
+end
+
+function params_ret_a(a::Float64)::Int32
+    return a + 1
+end
+
+function params_abc_ret_a(a, b, c::Int32)::Int32
+      
+         
+    a
+end
+
+
 # Identifiers, variables and types
 
 i = 10
@@ -54,4 +69,7 @@ a = [1 2; 3 4]
 .55
 0.7
 0.3e+12
-0.4e-12
+  0.4e-12   
+  
+     
+                     
