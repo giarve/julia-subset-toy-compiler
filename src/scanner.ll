@@ -95,7 +95,7 @@ STRING \"([^\\\"]|\\.)*\"
 "return"       return yy::parser::make_RETURN(loc);
 "::"           return yy::parser::make_DOUBLECOLON(loc);
 
-"Int32"        return make_TYPE (yytext, loc);
+"Int64"        return make_TYPE (yytext, loc);
 "Float64"      return make_TYPE (yytext, loc);
 "String"       return make_TYPE (yytext, loc);
 "Bool"         return make_TYPE (yytext, loc);
@@ -149,8 +149,8 @@ yy::parser::symbol_type make_BOOLEAN(const std::string &s, const yy::parser::loc
 
 yy::parser::symbol_type make_TYPE(const std::string &s, const yy::parser::location_type &loc)
 {
-    if(s == "Int32")
-        return yy::parser::make_TYPE(variant::JuliaType::Int32, loc);
+    if(s == "Int64")
+        return yy::parser::make_TYPE(variant::JuliaType::Int64, loc);
     else if(s == "Float64")
         return yy::parser::make_TYPE(variant::JuliaType::Float64, loc);
     else if(s == "String")

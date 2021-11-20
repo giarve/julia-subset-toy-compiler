@@ -1,4 +1,4 @@
-function no_params()::Int32
+function no_params()::Int64
 end
 
 function no_params_no_return_type()
@@ -8,15 +8,15 @@ end
 function no_body_no_params_no_return_type()
 end
 
-function params_ret_a(a::Float64)::Int32
+function params_ret_a(a::Float64)::Int64
     return a
 end
 
-function params_ret_a(a::Float64)::Int32
+function params_ret_a(a::Float64)::Int64
     return a + 1
 end
 
-function params_abc_ret_a(a, b, c::Int32)::Int32
+function params_abc_ret_a(a, b, c::Int64)::Int64
       
          
     a

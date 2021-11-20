@@ -178,14 +178,14 @@ namespace variant
 	{
 		lhs = std::visit(overloaded{
 
-							 [&](int lhs_arg) -> operable_variant_t
+							 [&](long lhs_arg) -> operable_variant_t
 							 {
 								 return std::visit(overloaded{
 													   [&](auto rhs_arg) -> operable_variant_t
 													   {
 														   throw SemanticException("cannot modulus integer " + stringify_operable_variant(lhs_arg) + " with non-integer: " + stringify_operable_variant(rhs_arg));
 													   },
-													   [&](int rhs_arg) -> operable_variant_t
+													   [&](long rhs_arg) -> operable_variant_t
 													   {
 														   return lhs_arg % rhs_arg;
 													   },
@@ -199,7 +199,7 @@ namespace variant
 													   {
 														   throw SemanticException("cannot modulus non-integers " + stringify_operable_variant(lhs_arg) + " with: " + stringify_operable_variant(rhs_arg));
 													   },
-													   [&](int rhs_arg) -> operable_variant_t
+													   [&](long rhs_arg) -> operable_variant_t
 													   {
 														   throw SemanticException("cannot modulus non-integer " + stringify_operable_variant(lhs_arg) + " with integer: " + stringify_operable_variant(rhs_arg));
 													   },
@@ -232,7 +232,7 @@ namespace variant
 																	 {
 																		 throw SemanticException("cannot exponentiate string '" + lhs_arg + "' with: " + stringify_operable_variant(rhs_arg));
 																	 },
-																	 [&](int rhs_arg) -> operable_variant_t
+																	 [&](long rhs_arg) -> operable_variant_t
 																	 {
 																		 std::ostringstream os;
 																		 for (int i = 0; i < rhs_arg; i++)

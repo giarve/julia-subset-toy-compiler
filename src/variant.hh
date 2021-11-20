@@ -37,13 +37,13 @@ namespace variant
 
 	enum JuliaType
 	{
-		Int32,
+		Int64,
 		Float64,
 		String,
 		Bool
 	};
 
-	using operable_variant_t = std::variant<int, double, std::string, bool>;
+	using operable_variant_t = std::variant<long, double, std::string, bool>;
 
 	std::string stringify_operable_variant(operable_variant_t v);
 

@@ -40,7 +40,7 @@
 
 %define api.token.prefix {TOKEN_}
 
-%token <int> INTEGER
+%token <long> INTEGER
 %token <float> FLOAT
 %token <std::string> STRING 
 %token <std::string> IDENTIFIER
@@ -61,8 +61,8 @@
 %nterm <variant::operable_multiarray> additive_expression primary_expression assignment_expression
 %nterm <variant::operable_multiarray> composite_element_list_initialization composite_element_tuple_initialization
 %nterm <variant::operable> CONSTANT
-%nterm <std::pair<int,int>> composite_element_list_access
-%nterm <int> arith_bool_expr_to_integer
+%nterm <std::pair<long,long>> composite_element_list_access
+%nterm <long> arith_bool_expr_to_long
 //%nterm <variant::operable_multiarray> function_definition
 
 // %printer { yyo << $$; } <*>; // debugging print
@@ -203,15 +203,15 @@ postfix_expression
 
 composite_element_list_access
 	// Substract 1 to each index because we use 0 index arrays internally
-	: arith_bool_expr_to_integer COMMA arith_bool_expr_to_integer { $$.first = $1-1; $$.second = $3-1; } // [x,y]
-	| arith_bool_expr_to_integer { $$.first = $1-1; } // [x]
+	: arith_bool_expr_to_long COMMA arith_bool_expr_to_long { $$.first = $1-1; $$.second = $3-1; } // [x,y]
+	| arith_bool_expr_to_long { $$.first = $1-1; } // [x]
 	;
 
-arith_bool_expr_to_integer
+arith_bool_expr_to_long
 	: arith_bool_exprs {
 		const variant::operable *scalar_equivalent = $1.scalar_equivalent();
 		try {
-			$$ = std::get<int>(scalar_equivalent->value);
+			$$ = std::get<long>(scalar_equivalent->value);
 		}
 		catch (const std::bad_variant_access& ex) {
 			throw yy::parser::syntax_error(drv.location, ex.what());
@@ -255,7 +255,8 @@ composite_element_tuple_initialization
 	| COMMA { $$.is_tuple = true; }
 	;
 
-	// FUNC_DIV 		 arith_bool_expr_to_integer COMMA arith_bool_expr_to_integer RPAREN { PRLG $$ = builtin::div($2, $4); EPLG }
+	// TODO: Add this function to functions' symbol table
+	// FUNC_DIV 		 arith_bool_expr_to_long COMMA arith_bool_expr_to_long RPAREN { PRLG $$ = builtin::div($2, $4); EPLG }
 
 CONSTANT
 	: INTEGER { $$.value = $1; }
