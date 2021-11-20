@@ -22,6 +22,10 @@ function params_abc_ret_a(a, b, c::Int32)::Int32
     a
 end
 
+noparams()
+params_ret_a(a)
+params_abc_ret_a(params_ret_a(a), 2, 3)
+
 
 # Identifiers, variables and types
 

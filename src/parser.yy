@@ -56,7 +56,7 @@
 %token FUNCTION_START FUNCTION_END DOUBLECOLON RETURN
 
 %nterm <variant::operable_multiarray> arith_bool_exprs
-%nterm <variant::operable_multiarray> logical_or_expression logical_and_expression equality_expression relational_expression
+// %nterm <variant::operable_multiarray> logical_or_expression logical_and_expression equality_expression relational_expression
 %nterm <variant::operable_multiarray> exponentiative_expression multiplicative_expression unary_expression postfix_expression
 %nterm <variant::operable_multiarray> additive_expression primary_expression assignment_expression
 %nterm <variant::operable_multiarray> composite_element_list_initialization composite_element_tuple_initialization
@@ -85,12 +85,12 @@ declaration
 	;
 
 function_definition
-	: FUNCTION_START IDENTIFIER LPAREN parameter_list.opt RPAREN type_declaration.opt NEWLINE function_statement_list.opt FUNCTION_END NEWLINE
+	: FUNCTION_START IDENTIFIER LPAREN parameter_declaration_list.opt RPAREN type_declaration.opt NEWLINE function_statement_list.opt FUNCTION_END NEWLINE
 	;
 
-parameter_list.opt:
+parameter_declaration_list.opt:
 	%empty
-	| parameter_list.opt COMMA parameter_declaration
+	| parameter_declaration_list.opt COMMA parameter_declaration
 	| parameter_declaration
 	;
 
@@ -140,9 +140,9 @@ assignment_expression
 	;
 
 arith_bool_exprs 
-	: logical_or_expression { $$ = $1; }
+	: additive_expression { $$ = $1; } // TODO: boolean ops are now disabled, replace with logical_or_expression to enabled them again
 	;
-
+/*
 logical_or_expression
 	: logical_and_expression { $$ = $1; }
 	| logical_or_expression OR logical_and_expression { PRLG $$ = $1 || $3; EPLG }
@@ -166,6 +166,7 @@ relational_expression
 	| relational_expression GREATER additive_expression			{ PRLG $$ = $1 > $3;  EPLG }
 	| relational_expression GREATER_EQUAL additive_expression	{ PRLG $$ = $1 >= $3; EPLG  }
 	;
+*/
 
 additive_expression
 	: multiplicative_expression { $$ = $1; }
@@ -223,7 +224,7 @@ primary_expression
 		if(!symtab.contains($1))
 			throw yy::parser::syntax_error(drv.location, "use of undeclared identifier: " + $1);
 		else
-			$$ = symtab[$1];
+			$$ = symtab[$1]; // TODO: after this moment, we cannot compile-time arithmetically operate anymore
 		}
 	| CONSTANT		{ $$.insert_row_element($1); }
 	| LPAREN arith_bool_exprs RPAREN { $$ = $2; }
@@ -231,6 +232,13 @@ primary_expression
 	| LSQRBRKT RSQRBRKT { } // empty array declaration
 	| LPAREN RPAREN { $$.is_tuple = true; } // empty tuple declaration
 	| LPAREN CONSTANT composite_element_tuple_initialization RPAREN { $$ = $3; $$.insert_row_element_start($2); }
+	| IDENTIFIER LPAREN parameter_call_list.opt RPAREN { /* TODO */ }
+	;
+
+parameter_call_list.opt:
+	%empty
+	| parameter_call_list.opt COMMA arith_bool_exprs
+	| arith_bool_exprs
 	;
 
 // change this if getting reduce conflicts to behave like tuple grammar (although this is faster when using vectors)
