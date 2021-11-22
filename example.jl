@@ -1,79 +1,96 @@
-function no_params()::Int64
+function params_ret_a(a::Float64)::Float64
+    asd = 15.0
+    return a + asd
 end
+
+print(params_ret_a(2.0))
+
+# WARNING: THESE ARE NOT GLOBAL VARIABLES AND THEY'RE STORED INSIDE THE MAIN FUNCTION
+# This means that they won't be accessible from other functions scope
+a = 5
+b = 2
+print(b)
+if b >= 2
+    b = a
+else
+    b = b * 2
+end
+while a <= 20
+    a = a * 2
+    print(a)
+end
+print(a)
+print(b)
+
+if 12317294
+    a = a * 2
+else
+    a = a + 1
+    b = 6
+end
+
+if true
+    a = a + 2
+else
+    a = a + 1
+end
+
+
+if true
+    a = a + 2
+end
+
 
 function no_params_no_return_type()
-    a = 1
+    a = 15 + 1
 end
 
-function no_body_no_params_no_return_type()
+function no_params_no_return_type_print()
+    # the following line errors because there is no checking (`no_params_no_return_type` returns nothing)
+    # but it is not handled properly by the compiler and segfaults
+    # b = no_params_no_return_type() 
 end
 
-function params_ret_a(a::Float64)::Int64
-    return a
+function no_body_param_no_ret(a::Float64)
 end
 
-function params_ret_a(a::Float64)::Int64
-    return a + 1
+function no_params()::Int64
+    no_params_no_return_type()
+    b = params_ret_a(1.0)
+    c = b + 2.0
+
+    x_stop_val = 0
+    for x in 1:6
+        if (x == 2 || x == 4 || x == 6)
+            print(x)
+        else
+            if x != 3
+                print(x + 100)
+            end
+        end
+        x_stop_val = x_stop_val + 1
+    end
+    return x_stop_val
 end
 
-function params_abc_ret_a(a, b, c::Int64)::Int64
-      
-         
-    a
+if no_params() == 6
+    print(999)
 end
 
-noparams()
-params_ret_a(a)
-params_abc_ret_a(params_ret_a(a), 2, 3)
+function params_abc_ret_a(a::Float64, b::Int64, c::Int64)::Int64
+    c = b * 2 * c
+    return c
+end
 
+print(params_abc_ret_a(5 * 5.0^3.0, params_abc_ret_a(0.0, 1, 2), 2))
 
-# Identifiers, variables and types
+no_params()
 
 i = 10
 r = 0.5 
-s = "Hello"
-b = true
+bool = true && true || false && false
+print(bool)
 
-# Arithmetic expressions
-5 + i * 5^3
-i / 2
-s * ", " * s
-5 % 4
+d = div(i, 2)
+print(d)
 
-# Arrays and vectors
-v_i = [10; 20; 30]
-v_r = [1.0; 2.0; 3.0]
-m_i = [1 2 3; 4 5 6]
-m_r = [1 2.2 3]
-A = [1.1 1.2; 2.1 2.2; 3.1 3.2]
-
-i + A[3, 2] / v_i[1]
-m_i[i - 8, m_i[1, 3]]
--7 - (i + 7.0)
-
-v_i[2]
-m_r[1, 3]
-A[3, 1]
-
-m_i * (v_i - 5 * v_r)
-
-#= multi line in single line =#
-
-#= multi
-line
-comment #  =#
-
-[1 2; 3 4]
-a = [1 2; 3 4]
-
-0.5
-.5
-00.5
-0.6
-.55
-0.7
-0.3e+12
-  0.4e-12   
-  
-     
-                     

@@ -60,6 +60,7 @@ STRING \"([^\\\"]|\\.)*\"
 <COMMENT_MULTILINE>.              { }
 
 ";"           return yy::parser::make_SEMICOLON (loc);
+":"           return yy::parser::make_COLON (loc);
 ","           return yy::parser::make_COMMA     (loc);
 "\["          return yy::parser::make_LSQRBRKT  (loc);
 "\]"          return yy::parser::make_RSQRBRKT  (loc);
@@ -91,9 +92,15 @@ STRING \"([^\\\"]|\\.)*\"
 "pi"          return make_FLOAT("3.1415926535897", loc);
 
 "function"     return yy::parser::make_FUNCTION_START(loc);
-"end"          return yy::parser::make_FUNCTION_END(loc);
+"end"          return yy::parser::make_END(loc);
 "return"       return yy::parser::make_RETURN(loc);
 "::"           return yy::parser::make_DOUBLECOLON(loc);
+"if"           return yy::parser::make_IF(loc);
+"else"         return yy::parser::make_ELSE(loc);
+"elseif"       return yy::parser::make_ELSEIF(loc);
+"while"        return yy::parser::make_WHILE(loc);
+"for"          return yy::parser::make_FOR(loc);
+"in"           return yy::parser::make_IN(loc);
 
 "Int64"        return make_TYPE (yytext, loc);
 "Float64"      return make_TYPE (yytext, loc);
@@ -150,13 +157,13 @@ yy::parser::symbol_type make_BOOLEAN(const std::string &s, const yy::parser::loc
 yy::parser::symbol_type make_TYPE(const std::string &s, const yy::parser::location_type &loc)
 {
     if(s == "Int64")
-        return yy::parser::make_TYPE(variant::JuliaType::Int64, loc);
+        return yy::parser::make_TYPE(JuliaType::Int64, loc);
     else if(s == "Float64")
-        return yy::parser::make_TYPE(variant::JuliaType::Float64, loc);
+        return yy::parser::make_TYPE(JuliaType::Float64, loc);
     else if(s == "String")
-        return yy::parser::make_TYPE(variant::JuliaType::String, loc);
+        return yy::parser::make_TYPE(JuliaType::String, loc);
     else
-        return yy::parser::make_TYPE(variant::JuliaType::Bool, loc);
+        return yy::parser::make_TYPE(JuliaType::Bool, loc);
 }
 
 void driver::scan_begin()

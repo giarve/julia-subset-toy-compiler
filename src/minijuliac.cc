@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+#include "llvm/IR/LegacyPassManager.h"
+
 #include "driver.hh"
 
 int main(int argc, char *argv[])
@@ -11,20 +13,27 @@ int main(int argc, char *argv[])
     }
 
     driver drv;
-    drv.trace_parsing = false;
-    drv.trace_scanning = false;
-
-    if(argv[3])
+    if (argv[3])
     {
-        drv.trace_parsing = true;
-        drv.trace_scanning = true;
+        if (*argv[3] == 'O')
+        {
+            drv.optimize = true;
+        }
+        else if (*argv[3] == 'D')
+        {
+            drv.trace_parsing = true;
+            drv.trace_scanning = true;
+        }
     }
-    
-    if(drv.parse(argv[1], argv[2]) != 0)
+
+    if (drv.parse(argv[1], argv[2]) != 0)
         ;
-        //std::cout << "Error code: " << drv.result << std::endl;
+    // std::cout << "Error code: " << drv.result << std::endl;
     else
+    {
+        drv.RootModule->print(llvm::outs(), nullptr); // Dump IR to stdout
         std::cout << "=== Success ==" << std::endl;
+    }
 
     return 0;
 }

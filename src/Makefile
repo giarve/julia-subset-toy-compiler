@@ -1,8 +1,15 @@
 CODE_DIR = src
 
 BISON = bison -Wcounterexamples
-CXX = g++ -std=c++20 -Wall -g -fmax-errors=4
 FLEX = flex
+
+# I removed -fno-exceptions because I use them in bison. and -std=c++14
+# Got this from `llvm-config --cxxflags --ldflags --system-libs --libs core`
+LLVM_FLAGS = -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -L/usr/lib -lLLVM-13
+
+# replace clang++ with g++ if you want
+CXX = clang++ -std=c++20 -Wall -g
+
 BASE = minijuliac
 
 all: $(BASE)
@@ -16,18 +23,16 @@ all: $(BASE)
 %.o: %.cc
 	$(CXX) -c -o$@ $<
 
-$(BASE): $(BASE).o driver.o parser.o scanner.o variant.o builtin.o customlog.o
-	$(CXX) -o ../$@ $^
+$(BASE): $(BASE).o driver.o parser.o scanner.o codegen.o
+	$(CXX) $(LLVM_FLAGS) -o ../$@ $^
 
 $(BASE).o: parser.hh
 parser.o: parser.hh
-variant.o: parser.hh
 scanner.o: parser.hh
-builtin.o: parser.hh
-customlog.o: parser.hh
+codegen.o: parser.hh
 
 examples: $(BASE)
-	../$(BASE) ../example.jl ../example.out.txt
+	../$(BASE) ../example.jl ../example.out.ll
 
 CLEANFILES =										\
   ../$(BASE) *.o										\
