@@ -46,6 +46,10 @@ Using C++, LLVM, bison and flex.
 
 Check out the `example.jl` file.
 
+## Interpreter
+
+Take a look at the `interpreter` branch.
+
 ## References
 
 https://en.wikipedia.org/wiki/GNU_Bison#Use
