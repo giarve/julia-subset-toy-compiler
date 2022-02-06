@@ -94,6 +94,7 @@ namespace variant
 
 		bool is_tuple = false; // is it read only?
 
+		// TODO: it is easier to use a single vector and implement matrix access properly
 		std::vector<std::vector<operable>> values = {std::vector<operable>{}};
 
 		operable_multiarray() {} // Used by bison for nterm
@@ -119,7 +120,6 @@ namespace variant
 
 		operable_multiarray &operator=(operable &&rhs)
 		{
-			// TODO: reset vector to only hold an scalar?
 			values[0].emplace_back(rhs);
 			return *this;
 		}

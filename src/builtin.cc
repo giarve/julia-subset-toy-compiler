@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "builtin.hh"
 
 namespace builtin
@@ -94,4 +96,52 @@ namespace builtin
         return new_op;
     }
 
+    variant::operable_multiarray trigonometric(const variant::operable_multiarray &op, auto func)
+    {
+        const variant::operable *scalar_equivalent = op.scalar_equivalent();
+
+        variant::operable_multiarray new_op;
+        new_op = std::visit(overloaded{[&](integral_or_floating_point auto arg) -> variant::operable
+                                       {
+                                           return variant::operable(func(arg));
+                                       },
+                                       [&](auto arg) -> variant::operable
+                                       {
+                                           throw variant::SemanticException("invalid type for trigonometric builtin call");
+                                       }},
+                            scalar_equivalent->value);
+        return new_op;
+    }
+
+    variant::operable_multiarray sin(const variant::operable_multiarray &op)
+    {
+        return trigonometric(
+            op, [](auto val) -> auto { return std::sin(val); });
+    }
+    variant::operable_multiarray cos(const variant::operable_multiarray &op)
+    {
+        return trigonometric(
+            op, [](auto val) -> auto { return std::cos(val); });
+    }
+    variant::operable_multiarray tan(const variant::operable_multiarray &op)
+    {
+        return trigonometric(
+            op, [](auto val) -> auto { return std::tan(val); });
+    }
+
+    variant::operable_multiarray asin(const variant::operable_multiarray &op)
+    {
+        return trigonometric(
+            op, [](auto val) -> auto { return std::asin(val); });
+    }
+    variant::operable_multiarray acos(const variant::operable_multiarray &op)
+    {
+        return trigonometric(
+            op, [](auto val) -> auto { return std::acos(val); });
+    }
+    variant::operable_multiarray atan(const variant::operable_multiarray &op)
+    {
+        return trigonometric(
+            op, [](auto val) -> auto { return std::atan(val); });
+    }
 }

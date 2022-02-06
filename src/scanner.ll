@@ -84,12 +84,23 @@ STRING \"([^\\\"]|\\.)*\"
 "||"          return yy::parser::make_OR    (loc);
 "!"           return yy::parser::make_BANG  (loc);
 
+
+"pi"          return make_FLOAT("3.1415926535897", loc);
+
 "transpose("   return yy::parser::make_FUNC_TRANSPOSE (loc);
 "div("         return yy::parser::make_FUNC_DIV (loc);
 "length("      return yy::parser::make_FUNC_LENGTH (loc);
 "size("        return yy::parser::make_FUNC_SIZE (loc);
 "ones("        return yy::parser::make_FUNC_ONES (loc);
 "zeros("        return yy::parser::make_FUNC_ZEROS (loc);
+
+"sin("        return yy::parser::make_FUNC_SIN (loc);
+"cos("        return yy::parser::make_FUNC_COS (loc);
+"tan("        return yy::parser::make_FUNC_TAN (loc);
+
+"asin("        return yy::parser::make_FUNC_ASIN (loc);
+"acos("        return yy::parser::make_FUNC_ACOS (loc);
+"atan("        return yy::parser::make_FUNC_ATAN (loc);
 
 "Int32"        return make_TYPE (yytext, loc);
 "Float64"      return make_TYPE (yytext, loc);
